@@ -208,7 +208,11 @@
         setTimeout(() => {
             const sub = document.getElementById('loadingSubtext');
             if (sub) sub.textContent = 'Die Generierung dauert länger als erwartet…';
-        }, 8000);
+        }, 10000);
+        setTimeout(() => {
+            const sub = document.getElementById('loadingSubtext');
+            if (sub) sub.textContent = 'Fast geschafft, nur noch einen kleinen Moment…';
+        }, 20000);
     }
 
     /* ═══════════════════════════════════════════════
@@ -517,7 +521,7 @@
     }
 
     /* ═══════════════════════════════════════════════
-       API & RENDERING (mit Timeout)
+       API & RENDERING (mit 30s Timeout)
        ═══════════════════════════════════════════════ */
     async function next() {
         const btn = document.getElementById('genBtn');
@@ -527,7 +531,7 @@
 
         try {
             const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 15000);
+            const timeout = setTimeout(() => controller.abort(), 30000); // 30 Sekunden
 
             const response = await fetch(API_URL, {
                 method: 'POST',
@@ -542,7 +546,21 @@
             saveSceneToHistory(currentScene);
 
         } catch (error) {
-            console.warn('API nicht erreichbar, nutze lokale Szene:', error);
+            console.warn('API nicht erreichbar:', error);
+            // Zeige Fehlermeldung als Fallback anstatt sofort lokale Szene
+            const out = document.getElementById('out');
+            if (error.name === 'AbortError') {
+                out.innerHTML = `<div class="empty">
+                    <div class="empty-icon">⏰</div>
+                    <div class="empty-t">Zeitüberschreitung</div>
+                    <div class="empty-s">Die KI brauchte zu lange. Bitte versuche es gleich noch einmal.</div>
+                </div>`;
+                btn.disabled = false;
+                btn.innerHTML = '🎲 Zufällig';
+                return;
+            }
+
+            // Andere Fehler → lokale Szene
             let ni;
             do { ni = Math.floor(Math.random() * S.length); } while (ni === idx && S.length > 1);
             idx = ni;
