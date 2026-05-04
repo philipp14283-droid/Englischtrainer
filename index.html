@@ -148,12 +148,12 @@
     /* ═══════════════════════════════════════════════
        KONFIGURATION
        ═══════════════════════════════════════════════ */
-    const API_URL = 'https://mercytrainerapi.y68xps2sdk.workers.dev'; // ← DEINE WORKER-URL
+    const API_URL = 'https://mercy-trainer-api.DEIN-NAME.workers.dev/api/generate'; // ← DEINE WORKER-URL
     let showDE = false, idx = -1, total = 0;
     let currentScene = null;
 
     /* ═══════════════════════════════════════════════
-       LOKALE FALLBACK-SZENEN (unverändert)
+       LOKALE FALLBACK-SZENEN
        ═══════════════════════════════════════════════ */
     const C = ['#2B5F4A','#4A3F8A','#8A5A00','#2B4A8A','#8A2B4A'];
     const S = [
@@ -163,12 +163,11 @@
             sp:[{n:"Reception Officer — Sarah",i:"SO",r:false},{n:"New Volunteer — Dr. Fischer",i:"DF",r:true}],
             lines:[
                 {s:0,en:"Welcome aboard, Dr. Fischer! We have been expecting you. My name is Sarah and I work at the reception desk. Before we get started with the check-in process, could you please hand me your passport, your vaccination record, and your medical clearance document? We also need your signed crew agreement.",de:"Willkommen an Bord, Dr. Fischer! Wir haben Sie erwartet. Mein Name ist Sarah und ich arbeite an der Rezeption. Bevor wir mit dem Check-in-Prozess beginnen, könnten Sie mir bitte Ihren Reisepass, Ihren Impfpass und Ihr medizinisches Freigabedokument geben?",v:["welcome aboard","check-in process","vaccination record","medical clearance document","crew agreement"]},
-                // ... restliche Zeilen wie vorher (hier abgeschnitten, aber in der echten Datei vollständig)
+                {s:1,en:"Of course! Here is my passport — it is valid until 2030. And this is my vaccination record. I have had yellow fever, hepatitis A and B, typhoid, and meningococcal vaccinations, and my COVID-19 vaccination is fully up to date. I also brought my medical license and a letter of good standing from my hospital back home.",de:"Natürlich! Hier ist mein Reisepass. Das ist mein Impfpass — ich habe Gelbfieber, Hepatitis A/B, Typhus und Meningokokken, und meine COVID-19-Impfung ist aktuell. Ich habe auch meine Approbation und eine Unbedenklichkeitsbescheinigung mitgebracht.",v:["vaccination record","yellow fever","hepatitis A and B","medical license","letter of good standing"]}
             ],
             vocab:["welcome aboard","check-in process","vaccination record","medical clearance","crew agreement","next of kin","liability waiver","professional credentials"],
             tip:"'At all times' und 'on board' sind typische Schiffsausdrücke — du wirst sie sehr oft hören."
         }
-        // Weitere Szenen aus deiner ursprünglichen Liste ...
     ];
 
     /* ═══════════════════════════════════════════════
@@ -462,7 +461,6 @@
         const dates = history.map(h => h.date.slice(0,10)).filter((v,i,a) => a.indexOf(v) === i).sort();
         let streak = 0;
         const today = new Date(todayStr());
-        // check if today or yesterday is in dates to continue streak
         if (dates.includes(todayStr()) || dates.includes(new Date(today - 864e5).toISOString().slice(0,10))) {
             streak = 1;
             for (let i = dates.length-1; i > 0; i--) {
