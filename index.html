@@ -37,6 +37,7 @@
         .btn-de.vis{display:inline-flex}
         .btn-trainer{background:#FFF3E0;color:#8A5A00;border:1px solid #F0C060}
         .btn-trainer:hover{background:#FFEAC0}
+        .btn-gen:disabled{opacity:0.7;cursor:not-allowed}
         .counter{font-family:var(--mono);font-size:12px;color:var(--faint);text-align:right;margin-bottom:8px}
         .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;animation:fadeIn .4s ease}
         @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -72,6 +73,19 @@
         .empty-icon{font-size:44px;margin-bottom:14px;opacity:.4}
         .empty-t{font-size:17px;font-weight:500;color:var(--text);margin-bottom:6px}
         .empty-s{font-size:13.5px;line-height:1.6}
+
+        /* Lade-Animation */
+        .loading-container{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 30px}
+        .spinner{
+            width:48px;height:48px;border:5px solid var(--border-light);
+            border-top-color:var(--accent);border-radius:50%;
+            animation: spin .8s linear infinite;margin-bottom:20px;
+        }
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .loading-text{font-size:15px;color:var(--muted);margin-bottom:6px}
+        .loading-subtext{font-size:13px;color:var(--faint)}
+
+        /* Dashboard & Trainer unverändert */
         .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
         @media(max-width:600px){.dashboard-grid{grid-template-columns:1fr}}
         .dash-card{background:var(--surface);border:1px solid var(--border-light);border-radius:12px;padding:16px}
@@ -182,6 +196,24 @@
     ];
 
     /* ═══════════════════════════════════════════════
+       LADE-ANZEIGE
+       ═══════════════════════════════════════════════ */
+    function showLoading() {
+        const out = document.getElementById('out');
+        out.innerHTML = `
+            <div class="loading-container">
+                <div class="spinner"></div>
+                <div class="loading-text">Szene wird generiert…</div>
+                <div class="loading-subtext" id="loadingSubtext">DeepSeek denkt nach</div>
+            </div>`;
+        // Nach 3 Sekunden eine zusätzliche Meldung, damit der Nutzer weiß, dass nichts hängt
+        setTimeout(() => {
+            const sub = document.getElementById('loadingSubtext');
+            if (sub) sub.textContent = 'Einen Moment bitte, die KI formuliert den Dialog…';
+        }, 3000);
+    }
+
+    /* ═══════════════════════════════════════════════
        SPACED REPETITION & VOCAB TRAINER
        ═══════════════════════════════════════════════ */
     const STORAGE_KEY = 'mercy_vocab_trainer';
@@ -269,10 +301,12 @@
             emptyDiv.style.display = 'none';
 
             const btns = cardDiv.querySelectorAll('.trainer-btn');
-            btns[0].onclick = () => rateCard(5);
-            btns[1].onclick = () => rateCard(3);
-            btns[2].onclick = () => rateCard(1);
-            btns[3].onclick = () => rateCard(0);
+            if(btns.length){
+                btns[0].onclick = () => rateCard(5);
+                btns[1].onclick = () => rateCard(3);
+                btns[2].onclick = () => rateCard(1);
+                btns[3].onclick = () => rateCard(0);
+            }
         } else {
             cardDiv.style.display = 'none';
             emptyDiv.style.display = 'block';
@@ -485,12 +519,13 @@
     }
 
     /* ═══════════════════════════════════════════════
-       API & RENDERING
+       API & RENDERING (mit Ladeanimation)
        ═══════════════════════════════════════════════ */
     async function next() {
         const btn = document.getElementById('genBtn');
         btn.disabled = true;
-        btn.innerHTML = '<span class="dice">⏳</span> Generiere…';
+        btn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:3px;"></span> Generiere…';
+        showLoading();
 
         try {
             const response = await fetch(API_URL, {
@@ -532,7 +567,8 @@
 
         const btn = document.getElementById('genBtnCustom');
         btn.disabled = true;
-        btn.innerHTML = '⏳ Generiere…';
+        btn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:3px;"></span> Generiere…';
+        showLoading();
 
         try {
             const response = await fetch(API_URL + '?custom=true', {
