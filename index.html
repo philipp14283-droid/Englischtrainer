@@ -74,7 +74,6 @@
         .empty-t{font-size:17px;font-weight:500;color:var(--text);margin-bottom:6px}
         .empty-s{font-size:13.5px;line-height:1.6}
 
-        /* Lade-Animation */
         .loading-container{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 30px}
         .spinner{
             width:48px;height:48px;border:5px solid var(--border-light);
@@ -85,7 +84,6 @@
         .loading-text{font-size:15px;color:var(--muted);margin-bottom:6px}
         .loading-subtext{font-size:13px;color:var(--faint)}
 
-        /* Dashboard & Trainer unverändert */
         .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
         @media(max-width:600px){.dashboard-grid{grid-template-columns:1fr}}
         .dash-card{background:var(--surface);border:1px solid var(--border-light);border-radius:12px;padding:16px}
@@ -126,9 +124,6 @@
     <p class="sub">Jeder Klick eine neue, ausführliche Dialog‑Situation – aus dem echten Schiffsalltag.<br>Gelb markierte Wörter sind Schlüsselvokabeln.</p>
 
     <div class="top-bar">
-        <input type="text" id="customSceneInput" placeholder="z.B. 'Eine Impfaufklärung mit einer nervösen Mutter'"
-               style="flex:1;min-width:200px;padding:12px 16px;border:1px solid var(--border);border-radius:8px;font-family:var(--sans);font-size:14px;background:var(--surface);">
-        <button class="btn-gen" id="genBtnCustom">✨ Wunschszene</button>
         <button class="btn-gen" id="genBtn">🎲 Zufällig</button>
         <button class="btn-dashboard" id="dashboardBtn">🏠 Dashboard</button>
         <button class="btn-history" id="historyBtn">🕒 Verlauf</button>
@@ -206,11 +201,14 @@
                 <div class="loading-text">Szene wird generiert…</div>
                 <div class="loading-subtext" id="loadingSubtext">DeepSeek denkt nach</div>
             </div>`;
-        // Nach 3 Sekunden eine zusätzliche Meldung, damit der Nutzer weiß, dass nichts hängt
         setTimeout(() => {
             const sub = document.getElementById('loadingSubtext');
             if (sub) sub.textContent = 'Einen Moment bitte, die KI formuliert den Dialog…';
         }, 3000);
+        setTimeout(() => {
+            const sub = document.getElementById('loadingSubtext');
+            if (sub) sub.textContent = 'Die Generierung dauert länger als erwartet…';
+        }, 8000);
     }
 
     /* ═══════════════════════════════════════════════
@@ -519,7 +517,7 @@
     }
 
     /* ═══════════════════════════════════════════════
-       API & RENDERING (mit Ladeanimation)
+       API & RENDERING (mit Timeout)
        ═══════════════════════════════════════════════ */
     async function next() {
         const btn = document.getElementById('genBtn');
@@ -528,58 +526,21 @@
         showLoading();
 
         try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 15000);
+
             const response = await fetch(API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            if (!response.ok) throw new Error(`API-Fehler ${response.status}`);
-            currentScene = await response.json();
-            total++;
-            saveSceneToHistory(currentScene);
-        } catch (error) {
-            console.warn('API nicht erreichbar, nutze lokale Szene:', error);
-            let ni;
-            do { ni = Math.floor(Math.random() * S.length); } while (ni === idx && S.length > 1);
-            idx = ni;
-            currentScene = S[idx];
-            total++;
-            saveSceneToHistory(currentScene);
-        }
-
-        showDE = false;
-        render();
-        document.getElementById('deBtn').classList.add('vis');
-        document.getElementById('deBtn').textContent = '🇩🇪 Übersetzung ein/aus';
-        document.getElementById('ctr').style.display = 'block';
-        document.getElementById('ctr').textContent = `Szene #${total} — ${currentScene.title}`;
-
-        btn.disabled = false;
-        btn.innerHTML = '🎲 Neue Situation';
-    }
-
-    async function nextCustom() {
-        const input = document.getElementById('customSceneInput');
-        const userPrompt = input.value.trim();
-        if (!userPrompt) {
-            alert('Bitte eine kurze Beschreibung der gewünschten Situation eingeben.');
-            return;
-        }
-
-        const btn = document.getElementById('genBtnCustom');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:3px;"></span> Generiere…';
-        showLoading();
-
-        try {
-            const response = await fetch(API_URL + '?custom=true', {
-                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: userPrompt })
+                signal: controller.signal
             });
+            clearTimeout(timeout);
+
             if (!response.ok) throw new Error(`API-Fehler ${response.status}`);
             currentScene = await response.json();
             total++;
             saveSceneToHistory(currentScene);
+
         } catch (error) {
             console.warn('API nicht erreichbar, nutze lokale Szene:', error);
             let ni;
@@ -598,7 +559,7 @@
         document.getElementById('ctr').textContent = `Szene #${total} — ${currentScene.title}`;
 
         btn.disabled = false;
-        btn.innerHTML = '✨ Wunschszene';
+        btn.innerHTML = '🎲 Zufällig';
     }
 
     function render() {
@@ -669,7 +630,6 @@
        INITIALISIERUNG
        ═══════════════════════════════════════════════ */
     document.getElementById('genBtn').onclick = next;
-    document.getElementById('genBtnCustom').onclick = nextCustom;
     document.getElementById('dashboardBtn').onclick = loadDashboard;
     document.getElementById('historyBtn').onclick = showHistory;
     document.getElementById('deBtn').onclick = toggleDE;
