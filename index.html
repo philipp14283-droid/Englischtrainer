@@ -148,7 +148,7 @@
     /* ═══════════════════════════════════════════════
        KONFIGURATION
        ═══════════════════════════════════════════════ */
-    const API_URL = 'https://mercy-trainer-api.DEIN-NAME.workers.dev/api/generate'; // ← DEINE WORKER-URL
+    const API_URL = 'https://mercytrainerapi.y68xps2sdk.workers.dev/api/generate';
     let showDE = false, idx = -1, total = 0;
     let currentScene = null;
 
@@ -167,6 +167,17 @@
             ],
             vocab:["welcome aboard","check-in process","vaccination record","medical clearance","crew agreement","next of kin","liability waiver","professional credentials"],
             tip:"'At all times' und 'on board' sind typische Schiffsausdrücke — du wirst sie sehr oft hören."
+        },
+        {
+            cat:"Crew-Klinik",loc:"Crew Clinic · Deck 4",diff:"B2",title:"Sick Crew Member — Suspected Malaria",
+            desc:"Ein Crew-Mitglied fühlt sich nach drei Wochen an Bord sehr krank und besucht die Crew-Klinik.",
+            sp:[{n:"Ship's Doctor — Dr. Amara",i:"DA",r:false},{n:"Crew Member — Du",i:"CM",r:true}],
+            lines:[
+                {s:0,en:"Good morning — please come in and take a seat. I can see straight away that you are not feeling well at all. Can I take your name and department?",de:"Guten Morgen — bitte kommen Sie herein und setzen Sie sich. Ich sehe sofort, dass es Ihnen gar nicht gut geht. Kann ich Ihren Namen und Ihre Abteilung aufnehmen?",v:["department"]},
+                {s:1,en:"My name is Felix, I am an anesthesiologist. I have a high fever — 39.7, severe headaches, muscle and joint pain, and I had rigors — shaking chills — during the night.",de:"Mein Name ist Felix, ich bin Anästhesist. Ich habe hohes Fieber — 39,7, starke Kopfschmerzen, Muskel- und Gelenkschmerzen und hatte nachts Schüttelfrost.",v:["fever","headaches","muscle and joint pain","rigors"]}
+            ],
+            vocab:["fever","rigors","sweating","malaria","malaria prophylaxis","vital signs","blood film","rapid diagnostic test"],
+            tip:"Beschreibe Symptome immer präzise: 'I have had rigors — shaking chills', 'The onset was sudden — within three hours.'"
         }
     ];
 
