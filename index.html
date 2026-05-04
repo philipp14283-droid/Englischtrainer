@@ -523,43 +523,58 @@
     /* ═══════════════════════════════════════════════
        API & RENDERING (mit 30s Timeout)
        ═══════════════════════════════════════════════ */
-    async function next() {
-        const btn = document.getElementById('genBtn');
-        btn.disabled = true;
-        btn.innerHTML = '⏳ Generiere…';
-        showLoading();
+   async function next() {
+    const btn = document.getElementById('genBtn');
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Generiere…';
+    showLoading();
 
-        try {
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 30000); // 30 Sekunden
+    const TIMEOUT_MS = 30000; // 30 Sekunden
 
-            const response = await fetch(API_URL, {
+    // Timeout‑Promise
+    const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('TIMEOUT')), TIMEOUT_MS)
+    );
+
+    try {
+        // Fetch gegen das Timeout rennen lassen
+        const response = await Promise.race([
+            fetch(API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                signal: controller.signal
-            });
-            clearTimeout(timeout);
+                headers: { 'Content-Type': 'application/json' }
+            }),
+            timeoutPromise.then(() => {
+                throw new Error('TIMEOUT');
+            })
+        ]);
 
-            if (!response.ok) throw new Error(`API-Fehler ${response.status}`);
-            currentScene = await response.json();
-            total++;
-            saveSceneToHistory(currentScene);
+        if (!response.ok) throw new Error(`API-Fehler ${response.status}`);
+        currentScene = await response.json();
+        total++;
+        saveSceneToHistory(currentScene);
 
-        } catch (error) {
-            console.warn('API nicht erreichbar:', error);
-            // Zeige Fehlermeldung als Fallback anstatt sofort lokale Szene
-            const out = document.getElementById('out');
-            if (error.name === 'AbortError') {
-                out.innerHTML = `<div class="empty">
-                    <div class="empty-icon">⏰</div>
-                    <div class="empty-t">Zeitüberschreitung</div>
-                    <div class="empty-s">Die KI brauchte zu lange. Bitte versuche es gleich noch einmal.</div>
-                </div>`;
-                btn.disabled = false;
-                btn.innerHTML = '🎲 Zufällig';
-                return;
-            }
+    } catch (error) {
+        console.warn('API nicht erreichbar:', error.message);
+        // Timeout oder andere Fehler → lokale Fallback‑Szene
+        let ni;
+        do { ni = Math.floor(Math.random() * S.length); } while (ni === idx && S.length > 1);
+        idx = ni;
+        currentScene = S[idx];
+        total++;
+        saveSceneToHistory(currentScene);
+    }
 
+    // Szene anzeigen
+    showDE = false;
+    render();
+    document.getElementById('deBtn').classList.add('vis');
+    document.getElementById('deBtn').textContent = '🇩🇪 Übersetzung ein/aus';
+    document.getElementById('ctr').style.display = 'block';
+    document.getElementById('ctr').textContent = `Szene #${total} — ${currentScene.title}`;
+
+    btn.disabled = false;
+    btn.innerHTML = '🎲 Zufällig';
+}
             // Andere Fehler → lokale Szene
             let ni;
             do { ni = Math.floor(Math.random() * S.length); } while (ni === idx && S.length > 1);
