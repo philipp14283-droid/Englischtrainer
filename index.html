@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mercy Ships — English Trainer</title>
+    <title>Mercy Ships — API Tester (robust)</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -17,253 +17,202 @@
         }
         body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
         .app{max-width:780px;margin:0 auto;padding:36px 20px 80px}
-        .logo{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);background:var(--accent-light);padding:5px 10px;border-radius:4px;display:inline-block;margin-bottom:16px}
         h1{font-size:26px;font-weight:300;letter-spacing:-.02em;margin-bottom:6px}
         h1 span{font-weight:600}
-        .sub{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.5}
-        .top-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:32px}
-        .btn-gen,.btn-dashboard,.btn-history,.btn-de,.btn-trainer{
-            background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px 18px;
-            font-size:14px;font-weight:500;font-family:var(--sans);cursor:pointer;transition:background .15s,transform .1s;
-            display:flex;align-items:center;gap:8px;
+        .top-bar{display:flex;gap:10px;align-items:center;margin-bottom:32px}
+        .btn-gen{
+            background:var(--accent);color:#fff;border:none;border-radius:8px;padding:14px 28px;
+            font-size:16px;font-weight:500;font-family:var(--sans);cursor:pointer;
+            transition:background .15s;display:flex;align-items:center;gap:10px;
         }
-        .btn-gen{background:var(--accent)}
         .btn-gen:hover{background:#234D3C}
-        .btn-dashboard{background:#4A3F8A}
-        .btn-dashboard:hover{background:#3C3270}
-        .btn-history{background:#E8F2EE;color:var(--accent)}
-        .btn-history:hover{background:#D0E5DC}
-        .btn-de{background:var(--de-bg);color:var(--de-text);border:1px solid #C8C0E8;display:none}
-        .btn-de.vis{display:inline-flex}
-        .btn-trainer{background:#FFF3E0;color:#8A5A00;border:1px solid #F0C060}
-        .btn-trainer:hover{background:#FFEAC0}
-        .btn-gen:disabled{opacity:0.7;cursor:not-allowed}
-        .counter{font-family:var(--mono);font-size:12px;color:var(--faint);text-align:right;margin-bottom:8px}
-        .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;animation:fadeIn .4s ease}
+        .btn-gen:disabled{opacity:0.6;cursor:not-allowed}
+        .card{
+            background:var(--surface);border:1px solid var(--border);border-radius:16px;
+            overflow:hidden;animation:fadeIn .4s ease;
+        }
         @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
         .card-head{padding:22px 26px 18px;border-bottom:1px solid var(--border-light);background:#FAFAF8}
         .tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
-        .tag{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:20px;background:var(--accent-light);color:var(--accent)}
+        .tag{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+            padding:4px 10px;border-radius:20px;background:var(--accent-light);color:var(--accent)}
         .tag.loc{background:#FEF3E0;color:#8A5A00}
         .tag.diff{background:#F0EEF8;color:#4A3F8A}
         .card-title{font-size:21px;font-weight:600;letter-spacing:-.02em;margin-bottom:4px}
         .card-desc{font-size:13.5px;color:var(--muted);line-height:1.55;margin-bottom:14px}
         .sp-row{display:flex;gap:14px;flex-wrap:wrap}
         .sp-chip{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted)}
-        .av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0}
+        .av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;
+            justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0}
         .dialogue{padding:24px 26px;display:flex;flex-direction:column;gap:2px}
         .lb{display:flex;gap:12px;padding:9px 0;align-items:flex-start}
         .lb.r{flex-direction:row-reverse}
-        .lav{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;flex-shrink:0;margin-top:2px}
+        .lav{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;
+            justify-content:center;font-size:12px;font-weight:600;color:#fff;flex-shrink:0;margin-top:2px}
         .lc{max-width:86%}
         .lb.r .lc{align-items:flex-end}
-        .sname{font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:3px}
+        .sname{font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+            color:var(--faint);margin-bottom:3px}
         .lb.r .sname{text-align:right}
-        .bub{background:var(--surface);border:1px solid var(--border-light);border-radius:12px;padding:11px 15px;font-size:14px;line-height:1.68;color:var(--text)}
+        .bub{background:var(--surface);border:1px solid var(--border-light);border-radius:12px;
+            padding:11px 15px;font-size:14px;line-height:1.68;color:var(--text)}
         .lb.r .bub{background:#EDF6F2;border-color:#C5E0D5}
-        .bub-de{font-size:12.5px;color:var(--de-text);font-style:italic;margin-top:7px;padding-top:7px;border-top:1px solid #E0DCF0;display:none;line-height:1.5}
+        .bub-de{font-size:12.5px;color:var(--de-text);font-style:italic;margin-top:7px;
+            padding-top:7px;border-top:1px solid #E0DCF0;display:none;line-height:1.5}
         .bub-de.on{display:block}
-        mark{background:var(--hl-bg);color:#7A5800;border-bottom:2px solid var(--hl);border-radius:2px;padding:0 2px;font-weight:500}
-        .voc-sec{padding:18px 26px 22px;border-top:1px solid var(--border-light);background:#FAFAF8}
-        .voc-title{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-        .chips{display:flex;flex-wrap:wrap;gap:6px}
-        .chip{font-size:12px;padding:4px 11px;border-radius:20px;background:var(--hl-bg);color:#7A5800;border:1px solid #F0DC90;font-family:var(--mono)}
-        .tip{margin-top:14px;padding:11px 15px;background:var(--accent-light);border-radius:8px;font-size:13px;color:var(--accent);line-height:1.5}
-        .empty{text-align:center;padding:70px 30px;border:2px dashed var(--border);border-radius:16px;color:var(--muted)}
-        .empty-icon{font-size:44px;margin-bottom:14px;opacity:.4}
-        .empty-t{font-size:17px;font-weight:500;color:var(--text);margin-bottom:6px}
-        .empty-s{font-size:13.5px;line-height:1.6}
-        .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
-        @media(max-width:600px){.dashboard-grid{grid-template-columns:1fr}}
-        .dash-card{background:var(--surface);border:1px solid var(--border-light);border-radius:12px;padding:16px}
-        .dash-number{font-size:32px;font-weight:600;color:var(--accent)}
-        .dash-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-        .bar-container{background:var(--bg);border-radius:6px;height:8px;width:100%;margin-top:4px}
-        .bar-fill{background:var(--accent);height:100%;border-radius:6px}
-        .activity-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-light);font-size:13px}
-        .activity-item:last-child{border-bottom:none}
-        .streak-fire{font-size:24px;vertical-align:middle}
-        .trainer-section{margin-top:40px}
-        .trainer-actions{display:flex;gap:10px;flex-wrap:wrap}
-        .trainer-btn{
-            background:var(--surface);border:2px solid var(--border);border-radius:8px;
-            padding:10px 16px;font-size:15px;cursor:pointer;font-family:var(--sans);
-            font-weight:500;transition:all .15s;
-        }
-        .trainer-btn.easy{border-color:var(--accent);color:var(--accent)}
-        .trainer-btn.easy:hover{background:var(--accent);color:#fff}
-        .trainer-btn.medium{border-color:#C8A700;color:#8A6D00}
-        .trainer-btn.medium:hover{background:#FFEEAA}
-        .trainer-btn.hard{border-color:#D0893B;color:#9A4D00}
-        .trainer-btn.hard:hover{background:#FFE0C0}
-        .trainer-btn.again{border-color:#C84B4B;color:#8A0000}
-        .trainer-btn.again:hover{background:#FFCCCC}
-        .add-scene-btn{
-            margin-top:14px;background:var(--hl-bg);border:1px solid #F0DC90;
-            border-radius:8px;padding:10px 16px;font-size:13px;cursor:pointer;
-            font-family:var(--sans);color:#7A5800;width:100%
-        }
-        .add-scene-btn:hover{background:#F0DC90}
+        mark{background:var(--hl-bg);color:#7A5800;border-bottom:2px solid var(--hl);
+            border-radius:2px;padding:0 2px;font-weight:500}
+        .toggle-de{background:var(--de-bg);color:var(--de-text);border:1px solid #C8C0E8;
+            border-radius:8px;padding:10px 18px;font-size:13px;font-weight:500;font-family:var(--sans);
+            cursor:pointer;margin-top:10px;}
+        .tip{margin-top:14px;padding:11px 15px;background:var(--accent-light);
+            border-radius:8px;font-size:13px;color:var(--accent);line-height:1.5}
         .loading-container{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 30px}
         .spinner{
             width:48px;height:48px;border:5px solid var(--border-light);
             border-top-color:var(--accent);border-radius:50%;
-            animation: spin .8s linear infinite;margin-bottom:20px;
+            animation:spin .8s linear infinite;margin-bottom:20px;
         }
         @keyframes spin{to{transform:rotate(360deg)}}
-        .loading-text{font-size:15px;color:var(--muted);margin-bottom:6px}
-        .loading-subtext{font-size:13px;color:var(--faint)}
     </style>
 </head>
 <body>
 <div class="app">
-    <div class="logo">Mercy Ships · English Trainer</div>
-    <h1>Situationen <span>üben</span></h1>
-    <p class="sub">Jeder Klick eine neue, ausführliche Dialog‑Situation – aus dem echten Schiffsalltag.<br>Gelb markierte Wörter sind Schlüsselvokabeln.</p>
-
+    <h1>API‑Tester – <span>robust</span></h1>
     <div class="top-bar">
-        <button class="btn-gen" id="genBtn">🎲 Zufällig</button>
-        <button class="btn-dashboard" id="dashboardBtn">🏠 Dashboard</button>
-        <button class="btn-history" id="historyBtn">🕒 Verlauf</button>
-        <button class="btn-de" id="deBtn">🇩🇪 Übersetzung ein/aus</button>
-        <button class="btn-trainer" id="vocabBtn">📚 Vokabeltrainer</button>
+        <button class="btn-gen" id="genBtn">🎲 Neue Szene laden</button>
     </div>
-    <div class="counter" id="ctr" style="display:none"></div>
-    <div id="out"></div>
-    <div id="vocabTrainerSection" class="trainer-section" style="display:none;">
-        <div class="card" style="padding:22px 26px;">
-            <div class="voc-title" style="margin-bottom:12px;">📚 Vokabeltrainer (Spaced Repetition)</div>
-            <div class="trainer-stats" id="trainerStats" style="margin-bottom:16px;font-size:13px;color:var(--muted);"></div>
-            <div id="trainerCard" style="display:none;">
-                <div style="font-size:28px;font-weight:600;margin:16px 0 8px;color:var(--accent);" id="trainerWord"></div>
-                <div style="font-size:14px;color:var(--muted);margin-bottom:20px;" id="trainerContext"></div>
-                <div class="trainer-actions">
-                    <button class="trainer-btn easy">😊 Leicht</button>
-                    <button class="trainer-btn medium">🤔 Mittel</button>
-                    <button class="trainer-btn hard">😣 Schwer</button>
-                    <button class="trainer-btn again">❌ Vergessen</button>
-                </div>
-            </div>
-            <div id="trainerEmpty" style="text-align:center;padding:24px;color:var(--muted);font-size:14px;">
-                Keine Karten fällig. Komm später wieder oder füge neue Vokabeln hinzu!
-            </div>
-            <button class="add-scene-btn" id="exportMdBtn" style="width:auto;margin-top:12px;">📝 Vokabeln als Markdown exportieren</button>
-        </div>
+    <div id="out">
+        <div style="text-align:center;padding:60px;color:var(--muted);">Klicke auf den Button, um eine Szene vom Worker zu holen.</div>
     </div>
 </div>
 <script>
     const API_URL = 'https://mercytrainerapi.y68xps2sdk.workers.dev/api/generate';
-    let showDE = false, total = 0;
-    let currentScene = null;
-
     const C = ['#2B5F4A','#4A3F8A','#8A5A00','#2B4A8A','#8A2B4A'];
-    const S = [
-        {
-            cat:"Ankunft",loc:"Reception · Deck 7",diff:"B2",title:"First Day Check-in",
-            desc:"Ein neuer Freiwilliger kommt zum ersten Mal an Bord.",
-            sp:[{n:"Reception Officer — Sarah",i:"SO",r:false},{n:"New Volunteer — Du",i:"DF",r:true}],
-            lines:[
-                {s:0,en:"Welcome aboard! I'm Sarah at reception. Please hand me your passport and vaccination record.",de:"Willkommen an Bord! Ich bin Sarah von der Rezeption. Bitte geben Sie mir Ihren Reisepass und Impfpass.",v:["welcome aboard","vaccination record"]},
-                {s:1,en:"Here they are. I also have my medical clearance and signed crew agreement.",de:"Hier sind sie. Ich habe auch meine medizinische Freigabe und den unterschriebenen Crew-Vertrag.",v:["medical clearance","crew agreement"]}
-            ],
-            vocab:["welcome aboard","vaccination record","medical clearance","crew agreement"],
-            tip:"'Welcome aboard' ist die Standardbegrüßung an Bord."
-        }
-    ];
+    let currentScene = null;
 
     function showLoading() {
         document.getElementById('out').innerHTML = `
             <div class="loading-container">
                 <div class="spinner"></div>
-                <div class="loading-text">Szene wird generiert…</div>
-                <div class="loading-subtext">Bitte warte einen Moment.</div>
+                <div style="color:var(--muted);">Szene wird generiert…</div>
             </div>`;
     }
 
-    async function next() {
+    function fetchWithTimeout(url, options, timeoutMs = 30000) {
+        return Promise.race([
+            fetch(url, options),
+            new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Timeout')), timeoutMs)
+            )
+        ]);
+    }
+
+    async function loadScene() {
         const btn = document.getElementById('genBtn');
         btn.disabled = true;
-        btn.textContent = '⏳ Generiere…';
+        btn.textContent = '⏳ Lade…';
         showLoading();
 
-        const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('TIMEOUT')), 30000)
-        );
-
         try {
-            const response = await Promise.race([
-                fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' } }),
-                timeoutPromise
-            ]);
-            if (!response.ok) throw new Error('API-Fehler ' + response.status);
-            currentScene = await response.json();
-            total++;
-            saveSceneToHistory(currentScene);
-        } catch (e) {
-            currentScene = S[Math.floor(Math.random() * S.length)];
-            total++;
-        }
+            const res = await fetchWithTimeout(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const json = await res.json();
 
-        showDE = false;
-        render();
-        document.getElementById('deBtn').classList.add('vis');
-        document.getElementById('deBtn').textContent = '🇩🇪 Übersetzung ein/aus';
-        document.getElementById('ctr').style.display = 'block';
-        document.getElementById('ctr').textContent = `Szene #${total} — ${currentScene.title}`;
-        btn.disabled = false;
-        btn.textContent = '🎲 Zufällig';
+            // Grundlegende Strukturprüfung
+            if (!json.sp || !Array.isArray(json.sp) || !json.lines || !Array.isArray(json.lines)) {
+                document.getElementById('out').innerHTML = `
+                    <div style="padding:20px;color:var(--text);">
+                        <p>⚠️ Die API hat kein gültiges Szenenformat geliefert.</p>
+                        <pre style="margin-top:10px;background:#f8f8f8;padding:10px;border-radius:8px;white-space:pre-wrap;">${JSON.stringify(json, null, 2)}</pre>
+                    </div>`;
+                return;
+            }
+
+            currentScene = json;
+            render();
+        } catch (e) {
+            document.getElementById('out').innerHTML = `
+                <div style="text-align:center;padding:40px;color:red;">
+                    Fehler: ${e.message}<br>Bitte versuche es später erneut.
+                </div>`;
+        } finally {
+            btn.disabled = false;
+            btn.textContent = '🎲 Neue Szene laden';
+        }
     }
 
     function render() {
         const sc = currentScene;
         if (!sc) return;
-        const spChips = sc.sp.map((sp, i) =>
-            `<div class="sp-chip"><div class="av" style="background:${C[i%C.length]}">${sp.i}</div><span>${sp.n}</span></div>`
-        ).join('');
-        const lines = sc.lines.map(line => {
-            let en = line.en;
-            (line.v || []).forEach(v => {
-                en = en.replace(new RegExp(v.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'gi'), '<mark>$&</mark>');
-            });
-            return `<div class="lb ${sc.sp[line.s].r ? 'r' : ''}">
-                <div class="lav" style="background:${C[line.s%C.length]}">${sc.sp[line.s].i}</div>
-                <div class="lc"><div class="sname">${sc.sp[line.s].n}</div>
-                <div class="bub">${en}<div class="bub-de">${line.de}</div></div></div></div>`;
+
+        // Sprecher-Chips (mit Fallback falls `i` oder `n` fehlen)
+        const spChips = (sc.sp || []).map((sp, i) => {
+            const initial = sp.i || '?';
+            const name = sp.n || 'Unbekannt';
+            const color = C[i % C.length];
+            return `
+                <div class="sp-chip">
+                    <div class="av" style="background:${color}">${initial}</div>
+                    <span>${name}</span>
+                </div>`;
         }).join('');
+
+        // Dialogzeilen rendern (mit robustem Zugriff auf Sprecher)
+        const lines = (sc.lines || []).map(line => {
+            const spIndex = (line.s !== undefined && line.s !== null) ? line.s : 0;
+            // Fallback, falls sp-Array kürzer ist
+            const sp = (sc.sp && sc.sp[spIndex]) ? sc.sp[spIndex] : { n:'Sprecher', i:'?', r:false };
+            const col = C[spIndex % C.length];
+            const isLearner = !!sp.r; // explizit boolean
+            let en = line.en || '';
+            (line.v || []).forEach(v => {
+                const escaped = v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                en = en.replace(new RegExp(escaped, 'gi'), '<mark>$&</mark>');
+            });
+            return `
+                <div class="lb ${isLearner ? 'r' : ''}">
+                    <div class="lav" style="background:${col}">${sp.i}</div>
+                    <div class="lc">
+                        <div class="sname">${sp.n}</div>
+                        <div class="bub">${en}
+                            <div class="bub-de">${line.de || ''}</div>
+                        </div>
+                    </div>
+                </div>`;
+        }).join('');
+
         document.getElementById('out').innerHTML = `
-            <div class="card"><div class="card-head">
-                <div class="tags"><span class="tag">${sc.cat}</span><span class="tag loc">${sc.loc}</span><span class="tag diff">${sc.diff}</span></div>
-                <div class="card-title">${sc.title}</div><div class="card-desc">${sc.desc}</div>
-                <div class="sp-row">${spChips}</div></div>
+            <div class="card">
+                <div class="card-head">
+                    <div class="tags">
+                        <span class="tag">${sc.cat || '?'}</span>
+                        <span class="tag loc">${sc.loc || ''}</span>
+                        <span class="tag diff">${sc.diff || ''}</span>
+                    </div>
+                    <div class="card-title">${sc.title || ''}</div>
+                    <div class="card-desc">${sc.desc || ''}</div>
+                    <div class="sp-row">${spChips}</div>
+                </div>
                 <div class="dialogue">${lines}</div>
-                <div class="voc-sec"><div class="voc-title">Schlüsselvokabeln</div>
-                <div class="chips">${(sc.vocab||[]).map(v=>`<span class="chip">${v}</span>`).join('')}</div>
-                <div class="tip">💡 ${sc.tip}</div></div></div>`;
+                <div style="padding:12px 26px;">
+                    <button class="toggle-de" id="toggleDeBtn">🇩🇪 Übersetzung einblenden</button>
+                </div>
+                ${sc.tip ? `<div class="tip" style="margin:0 26px 22px;">💡 ${sc.tip}</div>` : ''}
+            </div>`;
+
+        let deVisible = false;
+        document.getElementById('toggleDeBtn').onclick = () => {
+            deVisible = !deVisible;
+            document.querySelectorAll('.bub-de').forEach(el => el.classList.toggle('on', deVisible));
+            document.getElementById('toggleDeBtn').textContent = deVisible ? '🇩🇪 Übersetzung ausblenden' : '🇩🇪 Übersetzung einblenden';
+        };
     }
 
-    function toggleDE() {
-        showDE = !showDE;
-        document.querySelectorAll('.bub-de').forEach(e => e.classList.toggle('on', showDE));
-        document.getElementById('deBtn').textContent = showDE ? '🇩🇪 Übersetzung verbergen' : '🇩🇪 Übersetzung ein/aus';
-    }
-
-    const HISTORY_KEY = 'mercy_scene_history';
-    function saveSceneToHistory(scene) {
-        const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-        history.unshift({ title: scene.title, cat: scene.cat, loc: scene.loc, date: new Date().toISOString(), scene });
-        if (history.length > 10) history.length = 10;
-        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-    }
-
-    function loadDashboard() {
-        const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-        document.getElementById('out').innerHTML = `<div class="card" style="padding:20px"><h2>🏠 Dashboard</h2><p>Zuletzt generierte Szenen: ${history.length}</p></div>`;
-    }
-
-    document.getElementById('genBtn').onclick = next;
-    document.getElementById('dashboardBtn').onclick = loadDashboard;
-    document.getElementById('deBtn').onclick = toggleDE;
-    loadDashboard();
+    document.getElementById('genBtn').onclick = loadScene;
 </script>
 </body>
 </html>
