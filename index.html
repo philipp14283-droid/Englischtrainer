@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mercy Ships — API Tester (robust)</title>
+    <title>Mercy Ships — Englisch Trainer</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -74,22 +74,226 @@
             animation:spin .8s linear infinite;margin-bottom:20px;
         }
         @keyframes spin{to{transform:rotate(360deg)}}
+        .level-selector{padding:8px 16px;border:1px solid var(--border);border-radius:8px;
+            font-size:14px;font-family:var(--sans);background:var(--surface);cursor:pointer;
+            color:var(--text);transition:border-color .15s}
+        .level-selector:hover{border-color:var(--accent)}
+        .tab-nav{display:flex;gap:12px;border-bottom:2px solid var(--border-light);margin-bottom:28px;
+            margin-top:20px;overflow-x:auto}
+        .tab-btn{background:none;border:none;padding:12px 16px;font-size:14px;font-weight:500;
+            cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;font-family:var(--sans);
+            transition:all .15s;margin-bottom:-2px}
+        .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+        .tab-btn:hover{color:var(--text)}
+        .tab-content{display:none}
+        .tab-content.active{display:block;animation:fadeIn .3s ease}
+        .vocab-item{background:var(--accent-light);border-radius:8px;padding:14px 16px;margin-bottom:10px;
+            border-left:4px solid var(--accent)}
+        .vocab-item-word{font-weight:600;color:var(--accent);margin-bottom:4px}
+        .vocab-item-trans{font-size:13px;color:var(--muted);margin-bottom:6px}
+        .vocab-item-context{font-size:12px;font-style:italic;color:var(--faint);padding:6px 0;
+            border-top:1px solid rgba(43, 95, 74, 0.1);padding-top:6px}
+        .vocab-item-meta{display:flex;gap:8px;margin-top:8px;font-size:11px;color:var(--faint)}
+        .srs-badge{background:var(--hl-bg);padding:2px 8px;border-radius:4px;font-weight:500}
+        .btn-small{background:var(--de-bg);color:var(--de-text);border:1px solid #C8C0E8;
+            border-radius:6px;padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer;
+            transition:background .15s;font-family:var(--sans)}
+        .btn-small:hover{background:#E0DCF0}
+        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:16px;margin-top:16px}
+        .stat-card{background:var(--accent-light);border-radius:8px;padding:16px;text-align:center;border:1px solid #C5E0D5}
+        .stat-value{font-size:28px;font-weight:600;color:var(--accent);margin-bottom:4px}
+        .stat-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+        .srs-quiz{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+        .srs-question{font-size:16px;font-weight:600;margin-bottom:16px;color:var(--text)}
+        .srs-options{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+        .srs-option{background:var(--surface);border:1px solid var(--border-light);border-radius:8px;padding:12px;
+            cursor:pointer;transition:all .15s;text-align:left}
+        .srs-option:hover{border-color:var(--accent);background:var(--accent-light)}
+        .srs-option.selected{background:var(--accent-light);border-color:var(--accent)}
     </style>
 </head>
 <body>
 <div class="app">
     <h1>Mercy Ships – <span>Englisch Trainer</span></h1>
     <div class="top-bar">
+        <select class="level-selector" id="levelSelect">
+            <option value="A1">A1 – Anfänger</option>
+            <option value="A2">A2 – Grundlagen</option>
+            <option value="B1" selected>B1 – Mittelstufe</option>
+            <option value="B2">B2 – Oberstufe</option>
+            <option value="C1">C1 – Fortgeschritten</option>
+            <option value="C2">C2 – Expert</option>
+        </select>
         <button class="btn-gen" id="genBtn">🎲 Neue Szene laden</button>
     </div>
-    <div id="out">
-        <div style="text-align:center;padding:60px;color:var(--muted);">Klicke auf den Button, um eine Szene vom Worker zu holen.</div>
+
+    <!-- Custom Dialog Section -->
+    <div style="margin-top:20px;padding:16px;background:var(--accent-light);border-radius:12px;border-left:4px solid var(--accent);">
+        <div style="font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;margin-bottom:8px;letter-spacing:.05em;">Oder: Eigenes Szenario</div>
+        <div style="display:flex;gap:8px;align-items:flex-start;">
+            <input type="text" id="customPrompt" placeholder="z.B. 'Ein Patient mit Magenschmerzen kommt in die Klinik' oder 'Blutentnahme-Prozedur lernen'"
+                style="flex:1;padding:10px;border:1px solid #C5E0D5;border-radius:8px;font-family:var(--sans);font-size:13px;box-sizing:border-box;">
+            <button class="btn-gen" id="customBtn" style="white-space:nowrap;padding:10px 20px;font-size:14px;">✨ Erstellen</button>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="training">📚 Training</button>
+        <button class="tab-btn" data-tab="vocab">📝 Meine Vokabeln</button>
+        <button class="tab-btn" data-tab="stats">📊 Fortschritt</button>
+    </div>
+
+    <!-- Tab: Training -->
+    <div id="training" class="tab-content active">
+        <div id="out">
+            <div style="text-align:center;padding:60px;color:var(--muted);">Wähle ein Level und klicke auf "Neue Szene laden".</div>
+        </div>
+    </div>
+
+    <!-- Tab: Meine Vokabeln -->
+    <div id="vocab" class="tab-content">
+        <h2 style="font-size:20px;font-weight:600;margin-bottom:16px;">Deine Vokabeln</h2>
+        <div style="margin-bottom:16px;display:flex;gap:8px;">
+            <button class="btn-small" data-filter="all">Alle</button>
+            <button class="btn-small" data-filter="review">Zum Wiederholen</button>
+            <button class="btn-small" data-filter="week">Diese Woche</button>
+            <button class="btn-small" id="startQuizBtn" style="background:var(--accent);color:#fff;margin-left:auto;">🎯 Quiz starten</button>
+        </div>
+        <div id="quizContainer" style="display:none;margin-bottom:24px;">
+            <!-- Quiz wird hier eingefügt -->
+        </div>
+        <div id="vocabList" style="color:var(--muted);text-align:center;padding:40px;">
+            Noch keine Vokabeln gespeichert.
+        </div>
+    </div>
+
+    <!-- Tab: Stats -->
+    <div id="stats" class="tab-content">
+        <h2 style="font-size:20px;font-weight:600;margin-bottom:16px;">Dein Fortschritt</h2>
+        <div id="statsContainer">
+            <div style="color:var(--muted);text-align:center;padding:40px;">Starten Sie eine Trainings-Session, um Fortschritt zu sehen.</div>
+        </div>
     </div>
 </div>
 <script>
     const API_URL = 'https://mercytrainerapi.y68xps2sdk.workers.dev/api/generate';
+    const API_VOCAB_URL = 'https://mercytrainerapi.y68xps2sdk.workers.dev/api/vocabulary';
+    const API_SRS_URL = 'https://mercytrainerapi.y68xps2sdk.workers.dev/api/srs';
+    const API_STATS_URL = 'https://mercytrainerapi.y68xps2sdk.workers.dev/api/stats';
+
     const C = ['#2B5F4A','#4A3F8A','#8A5A00','#2B4A8A','#8A2B4A'];
     let currentScene = null;
+    let vocabs = [];
+    let userId = localStorage.getItem('userId') || 'user_' + Math.random().toString(36).substring(2, 11);
+    localStorage.setItem('userId', userId);
+
+    // Tab Switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            const tabId = btn.getAttribute('data-tab');
+            document.getElementById(tabId).classList.add('active');
+            if (tabId === 'vocab') loadVocabList();
+            if (tabId === 'stats') loadStats();
+        };
+    });
+
+    // Filter buttons
+    document.querySelectorAll('[data-filter]').forEach(btn => {
+        btn.onclick = () => {
+            const filter = btn.getAttribute('data-filter');
+            loadVocabList(filter);
+        };
+    });
+
+    // Quiz
+    let currentQuizIndex = 0;
+    let quizVocabs = [];
+    document.getElementById('startQuizBtn').onclick = startQuiz;
+
+    async function startQuiz() {
+        const toReview = vocabs.filter(v => new Date(v.nextReview) <= new Date());
+        if (toReview.length === 0) {
+            alert('Keine Vokabeln zum Wiederholen!');
+            return;
+        }
+        quizVocabs = toReview.sort(() => Math.random() - 0.5);
+        currentQuizIndex = 0;
+        showQuizQuestion();
+    }
+
+    function getRandomOptions(correct, allVocabs) {
+        let options = [correct.translation];
+        const others = allVocabs.filter(v => v.word !== correct.word && v.translation !== correct.translation);
+        for (let i = 0; i < Math.min(3, others.length); i++) {
+            options.push(others[Math.floor(Math.random() * others.length)].translation);
+        }
+        options = [...new Set(options)];
+        while (options.length < 4 && options.length < allVocabs.length) {
+            const random = allVocabs[Math.floor(Math.random() * allVocabs.length)];
+            if (!options.includes(random.translation)) options.push(random.translation);
+        }
+        return options.sort(() => Math.random() - 0.5).slice(0, 4);
+    }
+
+    function showQuizQuestion() {
+        if (currentQuizIndex >= quizVocabs.length) {
+            document.getElementById('quizContainer').innerHTML = `
+                <div style="background:var(--accent-light);border-radius:12px;padding:24px;text-align:center;">
+                    <div style="font-size:24px;color:var(--accent);font-weight:600;margin-bottom:12px;">✅ Quiz abgeschlossen!</div>
+                    <div style="color:var(--muted);">Du hast ${quizVocabs.length} Vokabeln wiederholt.</div>
+                </div>`;
+            setTimeout(() => loadVocabList('review'), 2000);
+            return;
+        }
+
+        const vocab = quizVocabs[currentQuizIndex];
+        const options = getRandomOptions(vocab, vocabs);
+        const optionsHtml = options.map((opt, idx) => `
+            <div class="srs-option" data-index="${idx}" data-correct="${opt === vocab.translation}" onclick="checkQuizAnswer(this, '${vocab.word}')">
+                ${opt}
+            </div>`).join('');
+
+        document.getElementById('quizContainer').innerHTML = `
+            <div class="srs-quiz">
+                <div style="text-align:center;font-size:12px;color:var(--muted);margin-bottom:16px;">
+                    Frage ${currentQuizIndex + 1} von ${quizVocabs.length}
+                </div>
+                <div class="srs-question">Was bedeutet <strong>"${vocab.word}"</strong>?</div>
+                <div class="srs-options">${optionsHtml}</div>
+            </div>`;
+    }
+
+    async function checkQuizAnswer(element, word) {
+        const isCorrect = element.getAttribute('data-correct') === 'true';
+        element.classList.add('selected');
+        document.querySelectorAll('.srs-option').forEach(opt => opt.style.pointerEvents = 'none');
+
+        const vocab = vocabs.find(v => v.word === word);
+        if (vocab && vocab.word) {
+            await updateSRSStatus(vocab, isCorrect);
+        }
+
+        setTimeout(() => {
+            currentQuizIndex++;
+            showQuizQuestion();
+        }, 1500);
+    }
+
+    async function updateSRSStatus(vocab, success) {
+        try {
+            await fetch(API_SRS_URL, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, vocabId: vocab.vocabId || vocab.word, success })
+            });
+        } catch (e) {
+            console.error('Error updating SRS:', e);
+        }
+    }
 
     function showLoading() {
         document.getElementById('out').innerHTML = `
@@ -99,7 +303,7 @@
             </div>`;
     }
 
-    function fetchWithTimeout(url, options, timeoutMs = 30000) {
+    function fetchWithTimeout(url, options, timeoutMs = 60000) {
         return Promise.race([
             fetch(url, options),
             new Promise((_, reject) =>
@@ -115,18 +319,19 @@
         showLoading();
 
         try {
+            const level = document.getElementById('levelSelect').value;
             const res = await fetchWithTimeout(API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ level, userId })
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const json = await res.json();
 
-            // Grundlegende Strukturprüfung
             if (!json.sp || !Array.isArray(json.sp) || !json.lines || !Array.isArray(json.lines)) {
                 document.getElementById('out').innerHTML = `
                     <div style="padding:20px;color:var(--text);">
-                        <p>⚠️ Die API hat kein gültiges Szenenformat geliefert.</p>
+                        <p>⚠️ Ungültiges Szenenformat.</p>
                         <pre style="margin-top:10px;background:#f8f8f8;padding:10px;border-radius:8px;white-space:pre-wrap;">${JSON.stringify(json, null, 2)}</pre>
                     </div>`;
                 return;
@@ -134,14 +339,106 @@
 
             currentScene = json;
             render();
+
+            // Auto-save vocabs from scene
+            if (json.vocab && Array.isArray(json.vocab)) {
+                for (const v of json.vocab) {
+                    await saveVocab(v.word, v.translation, v.context, v.difficulty);
+                }
+            }
         } catch (e) {
-            document.getElementById('out').innerHTML = `
-                <div style="text-align:center;padding:40px;color:red;">
-                    Fehler: ${e.message}<br>Bitte versuche es später erneut.
-                </div>`;
+            document.getElementById('out').innerHTML = `<div style="text-align:center;padding:40px;color:red;">Fehler: ${e.message}</div>`;
         } finally {
             btn.disabled = false;
             btn.textContent = '🎲 Neue Szene laden';
+        }
+    }
+
+    async function saveVocab(word, translation, context, difficulty) {
+        try {
+            const res = await fetch(API_VOCAB_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, word, translation, context, difficulty })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                localStorage.setItem(`vocab_${data.vocabId}`, JSON.stringify(data.data));
+            }
+        } catch (e) {
+            console.error('Error saving vocab:', e);
+        }
+    }
+
+    async function loadVocabList(filter = 'all') {
+        try {
+            const res = await fetch(`${API_VOCAB_URL}?userId=${userId}`);
+            const data = await res.json();
+            vocabs = data.vocabs || [];
+
+            let filtered = vocabs;
+            const now = new Date();
+            if (filter === 'review') {
+                filtered = vocabs.filter(v => new Date(v.nextReview) <= now);
+            } else if (filter === 'week') {
+                const weekFromNow = new Date(now.getTime() + 7 * 86400000);
+                filtered = vocabs.filter(v => {
+                    const nr = new Date(v.nextReview);
+                    return nr <= weekFromNow && nr > now;
+                });
+            }
+
+            if (filtered.length === 0) {
+                document.getElementById('vocabList').innerHTML = '<div style="color:var(--muted);text-align:center;padding:40px;">Noch keine Vokabeln in diesem Filter.</div>';
+                return;
+            }
+
+            let html = '';
+            for (const v of filtered) {
+                const nextReviewDate = new Date(v.nextReview).toLocaleDateString('de-DE');
+                html += `
+                    <div class="vocab-item">
+                        <div class="vocab-item-word">${v.word}</div>
+                        <div class="vocab-item-trans">→ ${v.translation}</div>
+                        <div class="vocab-item-context">"${v.context}"</div>
+                        <div class="vocab-item-meta">
+                            <span class="srs-badge">Level: ${v.difficulty}</span>
+                            <span class="srs-badge">Nächste Review: ${nextReviewDate}</span>
+                        </div>
+                    </div>`;
+            }
+            document.getElementById('vocabList').innerHTML = html;
+        } catch (e) {
+            console.error('Error loading vocabs:', e);
+            document.getElementById('vocabList').innerHTML = '<div style="color:red;padding:20px;">Fehler beim Laden der Vokabeln.</div>';
+        }
+    }
+
+    async function loadStats() {
+        try {
+            const res = await fetch(`${API_STATS_URL}?userId=${userId}`);
+            const data = await res.json();
+            const stats = data.stats || {};
+
+            const html = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.totalVocabs || 0}</div>
+                        <div class="stat-label">Vokabeln</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${stats.sessionsCompleted || 0}</div>
+                        <div class="stat-label">Sessions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${vocabs.filter(v => new Date(v.nextReview) <= new Date()).length || 0}</div>
+                        <div class="stat-label">Zum Wiederholen</div>
+                    </div>
+                </div>`;
+            document.getElementById('statsContainer').innerHTML = html;
+        } catch (e) {
+            console.error('Error loading stats:', e);
+            document.getElementById('statsContainer').innerHTML = '<div style="color:red;padding:20px;">Fehler beim Laden der Statistiken.</div>';
         }
     }
 
@@ -149,25 +446,18 @@
         const sc = currentScene;
         if (!sc) return;
 
-        // Sprecher-Chips (mit Fallback falls `i` oder `n` fehlen)
         const spChips = (sc.sp || []).map((sp, i) => {
             const initial = sp.i || '?';
             const name = sp.n || 'Unbekannt';
             const color = C[i % C.length];
-            return `
-                <div class="sp-chip">
-                    <div class="av" style="background:${color}">${initial}</div>
-                    <span>${name}</span>
-                </div>`;
+            return `<div class="sp-chip"><div class="av" style="background:${color}">${initial}</div><span>${name}</span></div>`;
         }).join('');
 
-        // Dialogzeilen rendern (mit robustem Zugriff auf Sprecher)
         const lines = (sc.lines || []).map(line => {
             const spIndex = (line.s !== undefined && line.s !== null) ? line.s : 0;
-            // Fallback, falls sp-Array kürzer ist
             const sp = (sc.sp && sc.sp[spIndex]) ? sc.sp[spIndex] : { n:'Sprecher', i:'?', r:false };
             const col = C[spIndex % C.length];
-            const isLearner = !!sp.r; // explizit boolean
+            const isLearner = !!sp.r;
             let en = line.en || '';
             (line.v || []).forEach(v => {
                 const escaped = v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -178,9 +468,7 @@
                     <div class="lav" style="background:${col}">${sp.i}</div>
                     <div class="lc">
                         <div class="sname">${sp.n}</div>
-                        <div class="bub">${en}
-                            <div class="bub-de">${line.de || ''}</div>
-                        </div>
+                        <div class="bub">${en}<div class="bub-de">${line.de || ''}</div></div>
                     </div>
                 </div>`;
         }).join('');
@@ -213,6 +501,62 @@
     }
 
     document.getElementById('genBtn').onclick = loadScene;
+    document.getElementById('customBtn').onclick = loadCustomScene;
+
+    // Enter-Key im Custom-Prompt Feld
+    document.getElementById('customPrompt').onkeypress = (e) => {
+        if (e.key === 'Enter') loadCustomScene();
+    };
+
+    loadStats();
+
+    async function loadCustomScene() {
+        const customText = document.getElementById('customPrompt').value.trim();
+        if (!customText) {
+            alert('Bitte gib eine Szenario-Beschreibung ein!');
+            return;
+        }
+
+        const btn = document.getElementById('customBtn');
+        btn.disabled = true;
+        btn.textContent = '⏳ Erstelle…';
+        showLoading();
+
+        try {
+            const level = document.getElementById('levelSelect').value;
+            const res = await fetchWithTimeout(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ level, userId, custom: true, customPrompt: customText })
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const json = await res.json();
+
+            if (!json.sp || !Array.isArray(json.sp) || !json.lines || !Array.isArray(json.lines)) {
+                document.getElementById('out').innerHTML = `
+                    <div style="padding:20px;color:var(--text);">
+                        <p>⚠️ Ungültiges Szenenformat.</p>
+                        <pre style="margin-top:10px;background:#f8f8f8;padding:10px;border-radius:8px;white-space:pre-wrap;">${JSON.stringify(json, null, 2)}</pre>
+                    </div>`;
+                return;
+            }
+
+            currentScene = json;
+            render();
+            document.getElementById('customPrompt').value = '';
+
+            if (json.vocab && Array.isArray(json.vocab)) {
+                for (const v of json.vocab) {
+                    await saveVocab(v.word, v.translation, v.context, v.difficulty);
+                }
+            }
+        } catch (e) {
+            document.getElementById('out').innerHTML = `<div style="text-align:center;padding:40px;color:red;">Fehler: ${e.message}</div>`;
+        } finally {
+            btn.disabled = false;
+            btn.textContent = '✨ Erstellen';
+        }
+    }
 </script>
 </body>
 </html>
