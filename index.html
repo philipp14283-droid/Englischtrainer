@@ -3,119 +3,614 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mercy Ships — Englisch Trainer</title>
+    <title>Mercy Ships — Sprachtrainer</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-        :root{
-            --bg:#F5F3EE;--surface:#FFF;--border:#D8D4CC;--border-light:#EAE7E0;
-            --text:#1A1916;--muted:#7A7670;--faint:#B0ACA5;
-            --accent:#2B5F4A;--accent-light:#E8F2EE;
-            --hl:#F5C842;--hl-bg:#FDF8E1;
-            --de-bg:#F0EEF8;--de-text:#4A3F8A;
-            --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:           #F4F4F5;
+            --surface:      #FFFFFF;
+            --surface-2:    #FAFAFA;
+            --border:       #E4E4E7;
+            --border-light: #F0F0F1;
+            --text:         #09090B;
+            --muted:        #71717A;
+            --faint:        #A1A1AA;
+            --accent:       #059669;
+            --accent-hover: #047857;
+            --accent-light: #ECFDF5;
+            --accent-mid:   #D1FAE5;
+            --hl:           #F59E0B;
+            --hl-bg:        #FFFBEB;
+            --purple:       #7C3AED;
+            --purple-bg:    #F5F3FF;
+            --red:          #DC2626;
+            --shadow-sm:    0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+            --shadow-md:    0 4px 16px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+            --shadow-lg:    0 8px 32px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.05);
+            --radius:       12px;
+            --radius-sm:    8px;
+            --radius-lg:    16px;
+            --mono:         'IBM Plex Mono', monospace;
+            --sans:         'IBM Plex Sans', sans-serif;
         }
-        body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
-        .app{max-width:780px;margin:0 auto;padding:36px 20px 80px}
-        h1{font-size:26px;font-weight:300;letter-spacing:-.02em;margin-bottom:6px}
-        h1 span{font-weight:600}
-        .top-bar{display:flex;gap:10px;align-items:center;margin-bottom:32px}
-        .btn-gen{
-            background:var(--accent);color:#fff;border:none;border-radius:8px;padding:14px 28px;
-            font-size:16px;font-weight:500;font-family:var(--sans);cursor:pointer;
-            transition:background .15s;display:flex;align-items:center;gap:10px;
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
-        .btn-gen:hover{background:#234D3C}
-        .btn-gen:disabled{opacity:0.6;cursor:not-allowed}
-        .card{
-            background:var(--surface);border:1px solid var(--border);border-radius:16px;
-            overflow:hidden;animation:fadeIn .4s ease;
+
+        .app {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 32px 20px 80px;
         }
-        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-        .card-head{padding:22px 26px 18px;border-bottom:1px solid var(--border-light);background:#FAFAF8}
-        .tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
-        .tag{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
-            padding:4px 10px;border-radius:20px;background:var(--accent-light);color:var(--accent)}
-        .tag.loc{background:#FEF3E0;color:#8A5A00}
-        .tag.diff{background:#F0EEF8;color:#4A3F8A}
-        .card-title{font-size:21px;font-weight:600;letter-spacing:-.02em;margin-bottom:4px}
-        .card-desc{font-size:13.5px;color:var(--muted);line-height:1.55;margin-bottom:14px}
-        .sp-row{display:flex;gap:14px;flex-wrap:wrap}
-        .sp-chip{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted)}
-        .av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;
-            justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0}
-        .dialogue{padding:24px 26px;display:flex;flex-direction:column;gap:2px}
-        .lb{display:flex;gap:12px;padding:9px 0;align-items:flex-start}
-        .lb.r{flex-direction:row-reverse}
-        .lav{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;
-            justify-content:center;font-size:12px;font-weight:600;color:#fff;flex-shrink:0;margin-top:2px}
-        .lc{max-width:86%}
-        .lb.r .lc{align-items:flex-end}
-        .sname{font-size:10.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
-            color:var(--faint);margin-bottom:3px}
-        .lb.r .sname{text-align:right}
-        .bub{background:var(--surface);border:1px solid var(--border-light);border-radius:12px;
-            padding:11px 15px;font-size:14px;line-height:1.68;color:var(--text)}
-        .lb.r .bub{background:#EDF6F2;border-color:#C5E0D5}
-        .bub-de{font-size:12.5px;color:var(--de-text);font-style:italic;margin-top:7px;
-            padding-top:7px;border-top:1px solid #E0DCF0;display:none;line-height:1.5}
-        .bub-de.on{display:block}
-        mark{background:var(--hl-bg);color:#7A5800;border-bottom:2px solid var(--hl);
-            border-radius:2px;padding:0 2px;font-weight:500}
-        .toggle-de{background:var(--de-bg);color:var(--de-text);border:1px solid #C8C0E8;
-            border-radius:8px;padding:10px 18px;font-size:13px;font-weight:500;font-family:var(--sans);
-            cursor:pointer;margin-top:10px;}
-        .tip{margin-top:14px;padding:11px 15px;background:var(--accent-light);
-            border-radius:8px;font-size:13px;color:var(--accent);line-height:1.5}
-        .loading-container{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 30px}
-        .spinner{
-            width:48px;height:48px;border:5px solid var(--border-light);
-            border-top-color:var(--accent);border-radius:50%;
-            animation:spin .8s linear infinite;margin-bottom:20px;
+
+        /* ── HEADER ── */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            gap: 16px;
         }
-        @keyframes spin{to{transform:rotate(360deg)}}
-        .level-selector{padding:8px 16px;border:1px solid var(--border);border-radius:8px;
-            font-size:14px;font-family:var(--sans);background:var(--surface);cursor:pointer;
-            color:var(--text);transition:border-color .15s}
-        .level-selector:hover{border-color:var(--accent)}
-        .tab-nav{display:flex;gap:12px;border-bottom:2px solid var(--border-light);margin-bottom:28px;
-            margin-top:20px;overflow-x:auto}
-        .tab-btn{background:none;border:none;padding:12px 16px;font-size:14px;font-weight:500;
-            cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;font-family:var(--sans);
-            transition:all .15s;margin-bottom:-2px}
-        .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
-        .tab-btn:hover{color:var(--text)}
-        .tab-content{display:none}
-        .tab-content.active{display:block;animation:fadeIn .3s ease}
-        .vocab-item{background:var(--accent-light);border-radius:8px;padding:14px 16px;margin-bottom:10px;
-            border-left:4px solid var(--accent)}
-        .vocab-item-word{font-weight:600;color:var(--accent);margin-bottom:4px}
-        .vocab-item-trans{font-size:13px;color:var(--muted);margin-bottom:6px}
-        .vocab-item-context{font-size:12px;font-style:italic;color:var(--faint);padding:6px 0;
-            border-top:1px solid rgba(43, 95, 74, 0.1);padding-top:6px}
-        .vocab-item-meta{display:flex;gap:8px;margin-top:8px;font-size:11px;color:var(--faint)}
-        .srs-badge{background:var(--hl-bg);padding:2px 8px;border-radius:4px;font-weight:500}
-        .btn-small{background:var(--de-bg);color:var(--de-text);border:1px solid #C8C0E8;
-            border-radius:6px;padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer;
-            transition:background .15s;font-family:var(--sans)}
-        .btn-small:hover{background:#E0DCF0}
-        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:16px;margin-top:16px}
-        .stat-card{background:var(--accent-light);border-radius:8px;padding:16px;text-align:center;border:1px solid #C5E0D5}
-        .stat-value{font-size:28px;font-weight:600;color:var(--accent);margin-bottom:4px}
-        .stat-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-        .srs-quiz{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
-        .srs-question{font-size:16px;font-weight:600;margin-bottom:16px;color:var(--text)}
-        .srs-options{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
-        .srs-option{background:var(--surface);border:1px solid var(--border-light);border-radius:8px;padding:12px;
-            cursor:pointer;transition:all .15s;text-align:left}
-        .srs-option:hover{border-color:var(--accent);background:var(--accent-light)}
-        .srs-option.selected{background:var(--accent-light);border-color:var(--accent)}
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
+        }
+        .header-text {}
+        .header-title {
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+        .header-sub {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 1px;
+        }
+
+        /* ── LANGUAGE SWITCHER ── */
+        .lang-switcher {
+            display: flex;
+            gap: 6px;
+            background: var(--border-light);
+            padding: 4px;
+            border-radius: 10px;
+        }
+        .lang-btn {
+            background: transparent;
+            border: none;
+            border-radius: 7px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: var(--sans);
+            cursor: pointer;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all .15s;
+            white-space: nowrap;
+        }
+        .lang-btn:hover { color: var(--text); background: rgba(255,255,255,.6); }
+        .lang-btn.active {
+            background: var(--surface);
+            color: var(--text);
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ── CONTROLS BAR ── */
+        .controls-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .level-selector {
+            padding: 9px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            font-family: var(--sans);
+            background: var(--surface);
+            color: var(--text);
+            cursor: pointer;
+            transition: border-color .15s, box-shadow .15s;
+            box-shadow: var(--shadow-sm);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717A' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 32px;
+        }
+        .level-selector:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(5,150,105,.12); }
+
+        .btn-gen {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 9px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: var(--sans);
+            cursor: pointer;
+            transition: background .15s, transform .1s, box-shadow .15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 1px 4px rgba(5,150,105,.3);
+            letter-spacing: -.01em;
+        }
+        .btn-gen:hover { background: var(--accent-hover); box-shadow: 0 2px 8px rgba(5,150,105,.35); }
+        .btn-gen:active { transform: scale(.98); }
+        .btn-gen:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+        /* ── CUSTOM PROMPT CARD ── */
+        .custom-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+        .custom-card-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .custom-card-row {
+            display: flex;
+            gap: 8px;
+        }
+        .custom-input {
+            flex: 1;
+            padding: 9px 13px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: var(--sans);
+            font-size: 13px;
+            color: var(--text);
+            background: var(--surface-2);
+            transition: border-color .15s, box-shadow .15s;
+        }
+        .custom-input::placeholder { color: var(--faint); }
+        .custom-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(5,150,105,.12); background: var(--surface); }
+        .btn-custom {
+            background: var(--text);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 9px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: var(--sans);
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background .15s, transform .1s;
+        }
+        .btn-custom:hover { background: #27272A; }
+        .btn-custom:active { transform: scale(.98); }
+        .btn-custom:disabled { opacity: .55; cursor: not-allowed; }
+
+        /* ── TABS ── */
+        .tab-nav {
+            display: flex;
+            gap: 2px;
+            background: var(--border-light);
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+        }
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            border-radius: 7px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: var(--sans);
+            cursor: pointer;
+            color: var(--muted);
+            transition: all .15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .tab-btn:hover { color: var(--text); background: rgba(255,255,255,.5); }
+        .tab-btn.active {
+            background: var(--surface);
+            color: var(--text);
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn .25s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── LOADING ── */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 30px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+        }
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            margin-bottom: 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── DIALOG CARD ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            animation: fadeIn .35s ease;
+        }
+        .card-head {
+            padding: 20px 24px 18px;
+            border-bottom: 1px solid var(--border-light);
+            background: var(--surface-2);
+        }
+        .tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .tag {
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            padding: 3px 9px;
+            border-radius: 20px;
+            background: var(--accent-light);
+            color: var(--accent);
+            border: 1px solid var(--accent-mid);
+        }
+        .tag.loc { background: #FEF9EC; color: #92400E; border-color: #FDE68A; }
+        .tag.diff { background: var(--purple-bg); color: var(--purple); border-color: #DDD6FE; }
+        .card-title { font-size: 20px; font-weight: 600; letter-spacing: -.02em; margin-bottom: 4px; }
+        .card-desc { font-size: 13px; color: var(--muted); line-height: 1.55; margin-bottom: 14px; }
+        .sp-row { display: flex; gap: 12px; flex-wrap: wrap; }
+        .sp-chip {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            color: var(--muted);
+            background: var(--border-light);
+            padding: 4px 10px 4px 5px;
+            border-radius: 20px;
+        }
+        .av {
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0;
+        }
+
+        /* ── DIALOGUE BUBBLES ── */
+        .dialogue { padding: 20px 24px; display: flex; flex-direction: column; gap: 4px; }
+        .lb { display: flex; gap: 10px; padding: 6px 0; align-items: flex-start; }
+        .lb.r { flex-direction: row-reverse; }
+        .lav {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+            margin-top: 2px;
+            box-shadow: 0 1px 4px rgba(0,0,0,.15);
+        }
+        .lc { max-width: 82%; }
+        .lb.r .lc { align-items: flex-end; }
+        .sname {
+            font-size: 10px; font-weight: 600;
+            letter-spacing: .06em; text-transform: uppercase;
+            color: var(--faint); margin-bottom: 4px;
+            padding: 0 4px;
+        }
+        .lb.r .sname { text-align: right; }
+        .bub {
+            background: var(--surface-2);
+            border: 1px solid var(--border-light);
+            border-radius: 14px;
+            border-top-left-radius: 4px;
+            padding: 10px 14px;
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text);
+            box-shadow: var(--shadow-sm);
+        }
+        .lb.r .bub {
+            background: var(--accent-light);
+            border-color: var(--accent-mid);
+            border-top-right-radius: 4px;
+            border-top-left-radius: 14px;
+        }
+        .bub-de {
+            font-size: 12px;
+            color: var(--purple);
+            font-style: italic;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #E9D5FF;
+            display: none;
+            line-height: 1.5;
+        }
+        .bub-de.on { display: block; }
+        mark {
+            background: transparent;
+            color: #92400E;
+            border-bottom: 2px solid var(--hl);
+            padding: 0 1px;
+            font-weight: 500;
+        }
+
+        /* ── CARD FOOTER ── */
+        .card-footer {
+            padding: 14px 24px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .toggle-de {
+            background: var(--surface-2);
+            color: var(--purple);
+            border: 1px solid #DDD6FE;
+            border-radius: var(--radius-sm);
+            padding: 9px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: var(--sans);
+            cursor: pointer;
+            transition: background .15s;
+            align-self: flex-start;
+        }
+        .toggle-de:hover { background: var(--purple-bg); }
+        .tip {
+            background: var(--accent-light);
+            border: 1px solid var(--accent-mid);
+            border-radius: var(--radius-sm);
+            padding: 11px 14px;
+            font-size: 13px;
+            color: var(--accent-hover);
+            line-height: 1.55;
+            display: flex;
+            gap: 8px;
+        }
+
+        /* ── VOCAB TAB ── */
+        .vocab-controls {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .btn-filter {
+            background: var(--surface);
+            color: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: var(--sans);
+            cursor: pointer;
+            transition: all .15s;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-filter:hover { color: var(--text); border-color: var(--text); }
+        .btn-filter.active { background: var(--text); color: #fff; border-color: var(--text); }
+        .btn-quiz {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: var(--sans);
+            cursor: pointer;
+            margin-left: auto;
+            transition: background .15s;
+            box-shadow: 0 1px 4px rgba(5,150,105,.3);
+        }
+        .btn-quiz:hover { background: var(--accent-hover); }
+
+        .vocab-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow .15s;
+        }
+        .vocab-item:hover { box-shadow: var(--shadow-md); }
+        .vocab-item-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+        .vocab-item-word { font-size: 15px; font-weight: 600; color: var(--text); }
+        .vocab-item-trans { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+        .vocab-item-context {
+            font-size: 12px;
+            font-style: italic;
+            color: var(--faint);
+            background: var(--surface-2);
+            border-radius: 6px;
+            padding: 6px 10px;
+            margin-bottom: 8px;
+            border-left: 2px solid var(--border);
+        }
+        .vocab-item-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+        .badge {
+            font-family: var(--mono);
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: var(--hl-bg);
+            color: #92400E;
+            border: 1px solid #FDE68A;
+        }
+        .badge.purple { background: var(--purple-bg); color: var(--purple); border-color: #DDD6FE; }
+
+        /* ── SRS QUIZ ── */
+        .quiz-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-md);
+        }
+        .quiz-progress {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--faint);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .quiz-question {
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+        .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+        .quiz-option {
+            background: var(--surface-2);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 13px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all .15s;
+        }
+        .quiz-option:hover { border-color: var(--accent); background: var(--accent-light); color: var(--accent-hover); }
+        .quiz-option.correct { border-color: var(--accent); background: var(--accent-light); color: var(--accent-hover); }
+        .quiz-option.wrong { border-color: var(--red); background: #FEF2F2; color: var(--red); }
+        .quiz-done {
+            background: var(--accent-light);
+            border: 1px solid var(--accent-mid);
+            border-radius: var(--radius);
+            padding: 28px;
+            text-align: center;
+        }
+        .quiz-done-icon { font-size: 32px; margin-bottom: 8px; }
+        .quiz-done-title { font-size: 18px; font-weight: 600; color: var(--accent-hover); margin-bottom: 6px; }
+        .quiz-done-sub { font-size: 13px; color: var(--muted); }
+
+        /* ── STATS ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 16px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+        .stat-value { font-size: 32px; font-weight: 700; color: var(--text); letter-spacing: -.03em; margin-bottom: 4px; }
+        .stat-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            text-align: center;
+            padding: 60px 24px;
+            color: var(--muted);
+        }
+        .empty-state-icon { font-size: 36px; margin-bottom: 12px; opacity: .5; }
+        .empty-state-text { font-size: 14px; }
+
+        /* ── SECTION TITLE ── */
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: -.01em;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
     </style>
 </head>
 <body>
 <div class="app">
-    <h1>Mercy Ships – <span>Englisch Trainer</span></h1>
-    <div class="top-bar">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-brand">
+            <div class="header-icon">⚕</div>
+            <div class="header-text">
+                <div class="header-title">Mercy Ships</div>
+                <div class="header-sub" id="appTitle">Englisch Trainer</div>
+            </div>
+        </div>
+        <div class="lang-switcher">
+            <button class="lang-btn active" data-lang="en">🇬🇧 EN</button>
+            <button class="lang-btn" data-lang="es">🇪🇸 ES</button>
+            <button class="lang-btn" data-lang="it">🇮🇹 IT</button>
+        </div>
+    </div>
+
+    <!-- CONTROLS BAR -->
+    <div class="controls-bar">
         <select class="level-selector" id="levelSelect">
             <option value="A1">A1 – Anfänger</option>
             <option value="A2">A2 – Grundlagen</option>
@@ -124,71 +619,104 @@
             <option value="C1">C1 – Fortgeschritten</option>
             <option value="C2">C2 – Expert</option>
         </select>
-        <button class="btn-gen" id="genBtn">🎲 Neue Szene laden</button>
+        <button class="btn-gen" id="genBtn">🎲 Neue Szene</button>
     </div>
 
-    <!-- Custom Dialog Section -->
-    <div style="margin-top:20px;padding:16px;background:var(--accent-light);border-radius:12px;border-left:4px solid var(--accent);">
-        <div style="font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;margin-bottom:8px;letter-spacing:.05em;">Oder: Eigenes Szenario</div>
-        <div style="display:flex;gap:8px;align-items:flex-start;">
-            <input type="text" id="customPrompt" placeholder="z.B. 'Ein Patient mit Magenschmerzen kommt in die Klinik' oder 'Blutentnahme-Prozedur lernen'"
-                style="flex:1;padding:10px;border:1px solid #C5E0D5;border-radius:8px;font-family:var(--sans);font-size:13px;box-sizing:border-box;">
-            <button class="btn-gen" id="customBtn" style="white-space:nowrap;padding:10px 20px;font-size:14px;">✨ Erstellen</button>
+    <!-- CUSTOM PROMPT -->
+    <div class="custom-card">
+        <div class="custom-card-label">✦ Eigenes Szenario erstellen</div>
+        <div class="custom-card-row">
+            <input class="custom-input" type="text" id="customPrompt"
+                placeholder="z.B. Blutentnahme bei einem Kind, Aufwachraum nach OP, Schmerzbefragung…">
+            <button class="btn-custom" id="customBtn">✨ Erstellen</button>
         </div>
     </div>
 
-    <!-- Tab Navigation -->
+    <!-- TABS -->
     <div class="tab-nav">
         <button class="tab-btn active" data-tab="training">📚 Training</button>
-        <button class="tab-btn" data-tab="vocab">📝 Meine Vokabeln</button>
+        <button class="tab-btn" data-tab="vocab">📝 Vokabeln</button>
         <button class="tab-btn" data-tab="stats">📊 Fortschritt</button>
     </div>
 
-    <!-- Tab: Training -->
+    <!-- TAB: TRAINING -->
     <div id="training" class="tab-content active">
         <div id="out">
-            <div style="text-align:center;padding:60px;color:var(--muted);">Wähle ein Level und klicke auf "Neue Szene laden".</div>
+            <div class="empty-state">
+                <div class="empty-state-icon">🩺</div>
+                <div class="empty-state-text">Level wählen und Szene laden<br>oder ein eigenes Szenario eingeben</div>
+            </div>
         </div>
     </div>
 
-    <!-- Tab: Meine Vokabeln -->
+    <!-- TAB: VOKABELN -->
     <div id="vocab" class="tab-content">
-        <h2 style="font-size:20px;font-weight:600;margin-bottom:16px;">Deine Vokabeln</h2>
-        <div style="margin-bottom:16px;display:flex;gap:8px;">
-            <button class="btn-small" data-filter="all">Alle</button>
-            <button class="btn-small" data-filter="review">Zum Wiederholen</button>
-            <button class="btn-small" data-filter="week">Diese Woche</button>
-            <button class="btn-small" id="startQuizBtn" style="background:var(--accent);color:#fff;margin-left:auto;">🎯 Quiz starten</button>
+        <div class="section-title">Gespeicherte Vokabeln</div>
+        <div class="vocab-controls">
+            <button class="btn-filter active" data-filter="all">Alle</button>
+            <button class="btn-filter" data-filter="review">Zum Wiederholen</button>
+            <button class="btn-filter" data-filter="week">Diese Woche</button>
+            <button class="btn-quiz" id="startQuizBtn">🎯 Quiz</button>
         </div>
-        <div id="quizContainer" style="display:none;margin-bottom:24px;">
-            <!-- Quiz wird hier eingefügt -->
-        </div>
-        <div id="vocabList" style="color:var(--muted);text-align:center;padding:40px;">
-            Noch keine Vokabeln gespeichert.
+        <div id="quizContainer"></div>
+        <div id="vocabList">
+            <div class="empty-state">
+                <div class="empty-state-icon">📝</div>
+                <div class="empty-state-text">Noch keine Vokabeln gespeichert</div>
+            </div>
         </div>
     </div>
 
-    <!-- Tab: Stats -->
+    <!-- TAB: STATS -->
     <div id="stats" class="tab-content">
-        <h2 style="font-size:20px;font-weight:600;margin-bottom:16px;">Dein Fortschritt</h2>
+        <div class="section-title">Dein Fortschritt</div>
         <div id="statsContainer">
-            <div style="color:var(--muted);text-align:center;padding:40px;">Starten Sie eine Trainings-Session, um Fortschritt zu sehen.</div>
+            <div class="empty-state">
+                <div class="empty-state-icon">📊</div>
+                <div class="empty-state-text">Starte eine Session um Fortschritt zu sehen</div>
+            </div>
         </div>
     </div>
+
 </div>
 <script>
-    const API_URL = 'https://mercytrainerapi.y68xps2sdk.workers.dev/api/generate';
+    const API_URL       = 'https://mercytrainerapi.y68xps2sdk.workers.dev/api/generate';
     const API_VOCAB_URL = 'https://mercytrainerapi.y68xps2sdk.workers.dev/api/vocabulary';
-    const API_SRS_URL = 'https://mercytrainerapi.y68xps2sdk.workers.dev/api/srs';
+    const API_SRS_URL   = 'https://mercytrainerapi.y68xps2sdk.workers.dev/api/srs';
     const API_STATS_URL = 'https://mercytrainerapi.y68xps2sdk.workers.dev/api/stats';
 
-    const C = ['#2B5F4A','#4A3F8A','#8A5A00','#2B4A8A','#8A2B4A'];
+    const AVATAR_COLORS = ['#059669','#7C3AED','#B45309','#1D4ED8','#BE185D'];
+
     let currentScene = null;
     let vocabs = [];
-    let userId = localStorage.getItem('userId') || 'user_' + Math.random().toString(36).substring(2, 11);
+    let userId = localStorage.getItem('userId') || 'user_' + Math.random().toString(36).substring(2,11);
     localStorage.setItem('userId', userId);
+    let currentLang = localStorage.getItem('currentLang') || 'en';
 
-    // Tab Switching
+    const LANG_META = {
+        en: { label: 'Englisch Trainer',   toggleBtn: '🇩🇪 Übersetzung einblenden', toggleBtnOff: '🇩🇪 Übersetzung ausblenden' },
+        es: { label: 'Spanisch Trainer',   toggleBtn: '🇩🇪 Übersetzung einblenden', toggleBtnOff: '🇩🇪 Übersetzung ausblenden' },
+        it: { label: 'Italienisch Trainer',toggleBtn: '🇩🇪 Übersetzung einblenden', toggleBtnOff: '🇩🇪 Übersetzung ausblenden' },
+    };
+
+    /* ── Language ── */
+    function applyLang(lang) {
+        currentLang = lang;
+        localStorage.setItem('currentLang', lang);
+        document.getElementById('appTitle').textContent = LANG_META[lang].label;
+        document.querySelectorAll('.lang-btn').forEach(b =>
+            b.classList.toggle('active', b.getAttribute('data-lang') === lang));
+        document.getElementById('out').innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">${lang === 'en' ? '🇬🇧' : lang === 'es' ? '🇪🇸' : '🇮🇹'}</div>
+                <div class="empty-state-text">Gewechselt zu <strong>${LANG_META[lang].label}</strong>. Neue Szene laden!</div>
+            </div>`;
+    }
+    document.querySelectorAll('.lang-btn').forEach(btn =>
+        btn.onclick = () => applyLang(btn.getAttribute('data-lang')));
+    applyLang(currentLang);
+
+    /* ── Tabs ── */
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.onclick = () => {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -196,164 +724,154 @@
             btn.classList.add('active');
             const tabId = btn.getAttribute('data-tab');
             document.getElementById(tabId).classList.add('active');
-            if (tabId === 'vocab') loadVocabList();
-            if (tabId === 'stats') loadStats();
+            if (tabId === 'vocab')  loadVocabList();
+            if (tabId === 'stats')  loadStats();
         };
     });
 
-    // Filter buttons
+    /* ── Filter buttons ── */
     document.querySelectorAll('[data-filter]').forEach(btn => {
         btn.onclick = () => {
-            const filter = btn.getAttribute('data-filter');
-            loadVocabList(filter);
+            document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            loadVocabList(btn.getAttribute('data-filter'));
         };
     });
 
-    // Quiz
-    let currentQuizIndex = 0;
-    let quizVocabs = [];
-    document.getElementById('startQuizBtn').onclick = startQuiz;
-
-    async function startQuiz() {
-        const toReview = vocabs.filter(v => new Date(v.nextReview) <= new Date());
-        if (toReview.length === 0) {
-            alert('Keine Vokabeln zum Wiederholen!');
-            return;
-        }
-        quizVocabs = toReview.sort(() => Math.random() - 0.5);
-        currentQuizIndex = 0;
-        showQuizQuestion();
-    }
-
-    function getRandomOptions(correct, allVocabs) {
-        let options = [correct.translation];
-        const others = allVocabs.filter(v => v.word !== correct.word && v.translation !== correct.translation);
-        for (let i = 0; i < Math.min(3, others.length); i++) {
-            options.push(others[Math.floor(Math.random() * others.length)].translation);
-        }
-        options = [...new Set(options)];
-        while (options.length < 4 && options.length < allVocabs.length) {
-            const random = allVocabs[Math.floor(Math.random() * allVocabs.length)];
-            if (!options.includes(random.translation)) options.push(random.translation);
-        }
-        return options.sort(() => Math.random() - 0.5).slice(0, 4);
-    }
-
-    function showQuizQuestion() {
-        if (currentQuizIndex >= quizVocabs.length) {
-            document.getElementById('quizContainer').innerHTML = `
-                <div style="background:var(--accent-light);border-radius:12px;padding:24px;text-align:center;">
-                    <div style="font-size:24px;color:var(--accent);font-weight:600;margin-bottom:12px;">✅ Quiz abgeschlossen!</div>
-                    <div style="color:var(--muted);">Du hast ${quizVocabs.length} Vokabeln wiederholt.</div>
-                </div>`;
-            setTimeout(() => loadVocabList('review'), 2000);
-            return;
-        }
-
-        const vocab = quizVocabs[currentQuizIndex];
-        const options = getRandomOptions(vocab, vocabs);
-        const optionsHtml = options.map((opt, idx) => `
-            <div class="srs-option" data-index="${idx}" data-correct="${opt === vocab.translation}" onclick="checkQuizAnswer(this, '${vocab.word}')">
-                ${opt}
-            </div>`).join('');
-
-        document.getElementById('quizContainer').innerHTML = `
-            <div class="srs-quiz">
-                <div style="text-align:center;font-size:12px;color:var(--muted);margin-bottom:16px;">
-                    Frage ${currentQuizIndex + 1} von ${quizVocabs.length}
-                </div>
-                <div class="srs-question">Was bedeutet <strong>"${vocab.word}"</strong>?</div>
-                <div class="srs-options">${optionsHtml}</div>
-            </div>`;
-    }
-
-    async function checkQuizAnswer(element, word) {
-        const isCorrect = element.getAttribute('data-correct') === 'true';
-        element.classList.add('selected');
-        document.querySelectorAll('.srs-option').forEach(opt => opt.style.pointerEvents = 'none');
-
-        const vocab = vocabs.find(v => v.word === word);
-        if (vocab && vocab.word) {
-            await updateSRSStatus(vocab, isCorrect);
-        }
-
-        setTimeout(() => {
-            currentQuizIndex++;
-            showQuizQuestion();
-        }, 1500);
-    }
-
-    async function updateSRSStatus(vocab, success) {
-        try {
-            await fetch(API_SRS_URL, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, vocabId: vocab.vocabId || vocab.word, success })
-            });
-        } catch (e) {
-            console.error('Error updating SRS:', e);
-        }
-    }
-
+    /* ── Helpers ── */
     function showLoading() {
         document.getElementById('out').innerHTML = `
             <div class="loading-container">
                 <div class="spinner"></div>
-                <div style="color:var(--muted);">Szene wird generiert…</div>
+                <div style="color:var(--muted);font-size:13px;">Dialog wird generiert…</div>
             </div>`;
     }
 
-    function fetchWithTimeout(url, options, timeoutMs = 60000) {
+    function fetchWithTimeout(url, opts, ms = 60000) {
         return Promise.race([
-            fetch(url, options),
-            new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('Timeout')), timeoutMs)
-            )
+            fetch(url, opts),
+            new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout')), ms))
         ]);
     }
 
+    /* ── Load Scene ── */
     async function loadScene() {
         const btn = document.getElementById('genBtn');
-        btn.disabled = true;
-        btn.textContent = '⏳ Lade…';
+        btn.disabled = true; btn.textContent = '⏳ Lade…';
         showLoading();
-
         try {
             const level = document.getElementById('levelSelect').value;
             const res = await fetchWithTimeout(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ level, userId })
+                body: JSON.stringify({ level, userId, language: currentLang })
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const json = await res.json();
-
-            if (!json.sp || !Array.isArray(json.sp) || !json.lines || !Array.isArray(json.lines)) {
-                document.getElementById('out').innerHTML = `
-                    <div style="padding:20px;color:var(--text);">
-                        <p>⚠️ Ungültiges Szenenformat.</p>
-                        <pre style="margin-top:10px;background:#f8f8f8;padding:10px;border-radius:8px;white-space:pre-wrap;">${JSON.stringify(json, null, 2)}</pre>
-                    </div>`;
+            if (!json.sp || !json.lines) {
+                document.getElementById('out').innerHTML = `<div style="padding:20px;color:var(--text);"><p>⚠️ Ungültiges Format</p><pre style="margin-top:10px;background:var(--surface-2);padding:12px;border-radius:8px;font-size:11px;white-space:pre-wrap;">${JSON.stringify(json,null,2)}</pre></div>`;
                 return;
             }
-
             currentScene = json;
             render();
-
-            // Auto-save vocabs from scene
-            if (json.vocab && Array.isArray(json.vocab)) {
-                for (const v of json.vocab) {
-                    await saveVocab(v.word, v.translation, v.context, v.difficulty);
-                }
-            }
-        } catch (e) {
-            document.getElementById('out').innerHTML = `<div style="text-align:center;padding:40px;color:red;">Fehler: ${e.message}</div>`;
+            if (json.vocab) for (const v of json.vocab) await saveVocab(v.word, v.translation, v.context, v.difficulty);
+        } catch(e) {
+            document.getElementById('out').innerHTML = `<div style="text-align:center;padding:40px;color:var(--red);">Fehler: ${e.message}</div>`;
         } finally {
-            btn.disabled = false;
-            btn.textContent = '🎲 Neue Szene laden';
+            btn.disabled = false; btn.innerHTML = '🎲 Neue Szene';
         }
     }
 
+    /* ── Custom Scene ── */
+    async function loadCustomScene() {
+        const customText = document.getElementById('customPrompt').value.trim();
+        if (!customText) { document.getElementById('customPrompt').focus(); return; }
+        const btn = document.getElementById('customBtn');
+        btn.disabled = true; btn.textContent = '⏳ Erstelle…';
+        showLoading();
+        try {
+            const level = document.getElementById('levelSelect').value;
+            const res = await fetchWithTimeout(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ level, userId, language: currentLang, custom: true, customPrompt: customText })
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const json = await res.json();
+            if (!json.sp || !json.lines) {
+                document.getElementById('out').innerHTML = `<div style="padding:20px;"><p>⚠️ Ungültiges Format</p><pre style="font-size:11px;">${JSON.stringify(json,null,2)}</pre></div>`;
+                return;
+            }
+            currentScene = json;
+            render();
+            document.getElementById('customPrompt').value = '';
+            if (json.vocab) for (const v of json.vocab) await saveVocab(v.word, v.translation, v.context, v.difficulty);
+        } catch(e) {
+            document.getElementById('out').innerHTML = `<div style="text-align:center;padding:40px;color:var(--red);">Fehler: ${e.message}</div>`;
+        } finally {
+            btn.disabled = false; btn.innerHTML = '✨ Erstellen';
+        }
+    }
+
+    /* ── Render Dialog ── */
+    function render() {
+        const sc = currentScene;
+        if (!sc) return;
+
+        const spChips = (sc.sp || []).map((sp, i) => {
+            const col = AVATAR_COLORS[i % AVATAR_COLORS.length];
+            return `<div class="sp-chip"><div class="av" style="background:${col}">${sp.i||'?'}</div>${sp.n||'?'}</div>`;
+        }).join('');
+
+        const lines = (sc.lines || []).map(line => {
+            const idx = line.s ?? 0;
+            const sp  = sc.sp?.[idx] ?? { n:'?', i:'?', r:false };
+            const col = AVATAR_COLORS[idx % AVATAR_COLORS.length];
+            let en = line.en || '';
+            (line.v || []).forEach(v => {
+                const esc = v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                en = en.replace(new RegExp(esc,'gi'), '<mark>$&</mark>');
+            });
+            return `
+                <div class="lb ${sp.r ? 'r' : ''}">
+                    <div class="lav" style="background:${col}">${sp.i}</div>
+                    <div class="lc">
+                        <div class="sname">${sp.n}</div>
+                        <div class="bub">${en}<div class="bub-de">${line.de||''}</div></div>
+                    </div>
+                </div>`;
+        }).join('');
+
+        document.getElementById('out').innerHTML = `
+            <div class="card">
+                <div class="card-head">
+                    <div class="tags">
+                        ${sc.cat  ? `<span class="tag">${sc.cat}</span>` : ''}
+                        ${sc.loc  ? `<span class="tag loc">${sc.loc}</span>` : ''}
+                        ${sc.diff ? `<span class="tag diff">${sc.diff}</span>` : ''}
+                    </div>
+                    <div class="card-title">${sc.title||''}</div>
+                    <div class="card-desc">${sc.desc||''}</div>
+                    <div class="sp-row">${spChips}</div>
+                </div>
+                <div class="dialogue">${lines}</div>
+                <div class="card-footer">
+                    <button class="toggle-de" id="toggleDeBtn">${LANG_META[currentLang].toggleBtn}</button>
+                    ${sc.tip ? `<div class="tip"><span>💡</span><span>${sc.tip}</span></div>` : ''}
+                </div>
+            </div>`;
+
+        let deVisible = false;
+        document.getElementById('toggleDeBtn').onclick = () => {
+            deVisible = !deVisible;
+            document.querySelectorAll('.bub-de').forEach(el => el.classList.toggle('on', deVisible));
+            document.getElementById('toggleDeBtn').textContent = deVisible
+                ? LANG_META[currentLang].toggleBtnOff
+                : LANG_META[currentLang].toggleBtn;
+        };
+    }
+
+    /* ── Vocab ── */
     async function saveVocab(word, translation, context, difficulty) {
         try {
             const res = await fetch(API_VOCAB_URL, {
@@ -365,198 +883,133 @@
                 const data = await res.json();
                 localStorage.setItem(`vocab_${data.vocabId}`, JSON.stringify(data.data));
             }
-        } catch (e) {
-            console.error('Error saving vocab:', e);
-        }
+        } catch(e) { console.error('saveVocab:', e); }
     }
 
     async function loadVocabList(filter = 'all') {
         try {
-            const res = await fetch(`${API_VOCAB_URL}?userId=${userId}`);
+            const res  = await fetch(`${API_VOCAB_URL}?userId=${userId}`);
             const data = await res.json();
             vocabs = data.vocabs || [];
 
-            let filtered = vocabs;
             const now = new Date();
-            if (filter === 'review') {
-                filtered = vocabs.filter(v => new Date(v.nextReview) <= now);
-            } else if (filter === 'week') {
-                const weekFromNow = new Date(now.getTime() + 7 * 86400000);
-                filtered = vocabs.filter(v => {
-                    const nr = new Date(v.nextReview);
-                    return nr <= weekFromNow && nr > now;
-                });
+            let filtered = vocabs;
+            if (filter === 'review') filtered = vocabs.filter(v => new Date(v.nextReview) <= now);
+            else if (filter === 'week') {
+                const weekOut = new Date(now.getTime() + 7*86400000);
+                filtered = vocabs.filter(v => { const d = new Date(v.nextReview); return d > now && d <= weekOut; });
             }
 
-            if (filtered.length === 0) {
-                document.getElementById('vocabList').innerHTML = '<div style="color:var(--muted);text-align:center;padding:40px;">Noch keine Vokabeln in diesem Filter.</div>';
+            if (!filtered.length) {
+                document.getElementById('vocabList').innerHTML = `
+                    <div class="empty-state"><div class="empty-state-icon">📝</div>
+                    <div class="empty-state-text">Keine Vokabeln in diesem Filter</div></div>`;
                 return;
             }
 
-            let html = '';
-            for (const v of filtered) {
-                const nextReviewDate = new Date(v.nextReview).toLocaleDateString('de-DE');
-                html += `
-                    <div class="vocab-item">
+            document.getElementById('vocabList').innerHTML = filtered.map(v => `
+                <div class="vocab-item">
+                    <div class="vocab-item-top">
                         <div class="vocab-item-word">${v.word}</div>
-                        <div class="vocab-item-trans">→ ${v.translation}</div>
-                        <div class="vocab-item-context">"${v.context}"</div>
-                        <div class="vocab-item-meta">
-                            <span class="srs-badge">Level: ${v.difficulty}</span>
-                            <span class="srs-badge">Nächste Review: ${nextReviewDate}</span>
-                        </div>
-                    </div>`;
-            }
-            document.getElementById('vocabList').innerHTML = html;
-        } catch (e) {
-            console.error('Error loading vocabs:', e);
-            document.getElementById('vocabList').innerHTML = '<div style="color:red;padding:20px;">Fehler beim Laden der Vokabeln.</div>';
+                    </div>
+                    <div class="vocab-item-trans">→ ${v.translation}</div>
+                    <div class="vocab-item-context">"${v.context||''}"</div>
+                    <div class="vocab-item-badges">
+                        <span class="badge">${v.difficulty||'B1'}</span>
+                        <span class="badge purple">Review: ${new Date(v.nextReview).toLocaleDateString('de-DE')}</span>
+                    </div>
+                </div>`).join('');
+        } catch(e) {
+            document.getElementById('vocabList').innerHTML = `<div style="color:var(--red);padding:16px;">Fehler: ${e.message}</div>`;
         }
     }
 
     async function loadStats() {
         try {
-            const res = await fetch(`${API_STATS_URL}?userId=${userId}`);
+            const res  = await fetch(`${API_STATS_URL}?userId=${userId}`);
             const data = await res.json();
-            const stats = data.stats || {};
-
-            const html = `
+            const s    = data.stats || {};
+            const due  = vocabs.filter(v => new Date(v.nextReview) <= new Date()).length;
+            document.getElementById('statsContainer').innerHTML = `
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value">${stats.totalVocabs || 0}</div>
-                        <div class="stat-label">Vokabeln</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${stats.sessionsCompleted || 0}</div>
-                        <div class="stat-label">Sessions</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${vocabs.filter(v => new Date(v.nextReview) <= new Date()).length || 0}</div>
-                        <div class="stat-label">Zum Wiederholen</div>
-                    </div>
+                    <div class="stat-card"><div class="stat-value">${s.totalVocabs||0}</div><div class="stat-label">Vokabeln</div></div>
+                    <div class="stat-card"><div class="stat-value">${s.sessionsCompleted||0}</div><div class="stat-label">Sessions</div></div>
+                    <div class="stat-card"><div class="stat-value">${due}</div><div class="stat-label">Zum Wiederholen</div></div>
                 </div>`;
-            document.getElementById('statsContainer').innerHTML = html;
-        } catch (e) {
-            console.error('Error loading stats:', e);
-            document.getElementById('statsContainer').innerHTML = '<div style="color:red;padding:20px;">Fehler beim Laden der Statistiken.</div>';
+        } catch(e) {
+            document.getElementById('statsContainer').innerHTML = `<div style="color:var(--red);padding:16px;">Fehler: ${e.message}</div>`;
         }
     }
 
-    function render() {
-        const sc = currentScene;
-        if (!sc) return;
+    /* ── SRS Quiz ── */
+    let quizIndex = 0, quizVocabs = [];
+    document.getElementById('startQuizBtn').onclick = startQuiz;
 
-        const spChips = (sc.sp || []).map((sp, i) => {
-            const initial = sp.i || '?';
-            const name = sp.n || 'Unbekannt';
-            const color = C[i % C.length];
-            return `<div class="sp-chip"><div class="av" style="background:${color}">${initial}</div><span>${name}</span></div>`;
-        }).join('');
-
-        const lines = (sc.lines || []).map(line => {
-            const spIndex = (line.s !== undefined && line.s !== null) ? line.s : 0;
-            const sp = (sc.sp && sc.sp[spIndex]) ? sc.sp[spIndex] : { n:'Sprecher', i:'?', r:false };
-            const col = C[spIndex % C.length];
-            const isLearner = !!sp.r;
-            let en = line.en || '';
-            (line.v || []).forEach(v => {
-                const escaped = v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                en = en.replace(new RegExp(escaped, 'gi'), '<mark>$&</mark>');
-            });
-            return `
-                <div class="lb ${isLearner ? 'r' : ''}">
-                    <div class="lav" style="background:${col}">${sp.i}</div>
-                    <div class="lc">
-                        <div class="sname">${sp.n}</div>
-                        <div class="bub">${en}<div class="bub-de">${line.de || ''}</div></div>
-                    </div>
-                </div>`;
-        }).join('');
-
-        document.getElementById('out').innerHTML = `
-            <div class="card">
-                <div class="card-head">
-                    <div class="tags">
-                        <span class="tag">${sc.cat || '?'}</span>
-                        <span class="tag loc">${sc.loc || ''}</span>
-                        <span class="tag diff">${sc.diff || ''}</span>
-                    </div>
-                    <div class="card-title">${sc.title || ''}</div>
-                    <div class="card-desc">${sc.desc || ''}</div>
-                    <div class="sp-row">${spChips}</div>
-                </div>
-                <div class="dialogue">${lines}</div>
-                <div style="padding:12px 26px;">
-                    <button class="toggle-de" id="toggleDeBtn">🇩🇪 Übersetzung einblenden</button>
-                </div>
-                ${sc.tip ? `<div class="tip" style="margin:0 26px 22px;">💡 ${sc.tip}</div>` : ''}
-            </div>`;
-
-        let deVisible = false;
-        document.getElementById('toggleDeBtn').onclick = () => {
-            deVisible = !deVisible;
-            document.querySelectorAll('.bub-de').forEach(el => el.classList.toggle('on', deVisible));
-            document.getElementById('toggleDeBtn').textContent = deVisible ? '🇩🇪 Übersetzung ausblenden' : '🇩🇪 Übersetzung einblenden';
-        };
+    async function startQuiz() {
+        const due = vocabs.filter(v => new Date(v.nextReview) <= new Date());
+        if (!due.length) { alert('Keine Vokabeln fällig!'); return; }
+        quizVocabs = due.sort(() => Math.random() - .5);
+        quizIndex = 0;
+        document.getElementById('quizContainer').style.display = 'block';
+        showQuizQ();
     }
 
-    document.getElementById('genBtn').onclick = loadScene;
-    document.getElementById('customBtn').onclick = loadCustomScene;
+    function getRandOptions(correct) {
+        let opts = [correct.translation];
+        const pool = vocabs.filter(v => v.translation !== correct.translation);
+        pool.sort(() => Math.random()-.5);
+        for (const p of pool) { if (!opts.includes(p.translation)) opts.push(p.translation); if (opts.length >= 4) break; }
+        return opts.sort(() => Math.random()-.5);
+    }
 
-    // Enter-Key im Custom-Prompt Feld
-    document.getElementById('customPrompt').onkeypress = (e) => {
-        if (e.key === 'Enter') loadCustomScene();
-    };
-
-    loadStats();
-
-    async function loadCustomScene() {
-        const customText = document.getElementById('customPrompt').value.trim();
-        if (!customText) {
-            alert('Bitte gib eine Szenario-Beschreibung ein!');
+    function showQuizQ() {
+        if (quizIndex >= quizVocabs.length) {
+            document.getElementById('quizContainer').innerHTML = `
+                <div class="quiz-done">
+                    <div class="quiz-done-icon">✅</div>
+                    <div class="quiz-done-title">Quiz abgeschlossen!</div>
+                    <div class="quiz-done-sub">Du hast ${quizVocabs.length} Vokabeln wiederholt</div>
+                </div>`;
+            setTimeout(() => { document.getElementById('quizContainer').innerHTML = ''; loadVocabList('review'); }, 2500);
             return;
         }
-
-        const btn = document.getElementById('customBtn');
-        btn.disabled = true;
-        btn.textContent = '⏳ Erstelle…';
-        showLoading();
-
-        try {
-            const level = document.getElementById('levelSelect').value;
-            const res = await fetchWithTimeout(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ level, userId, custom: true, customPrompt: customText })
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const json = await res.json();
-
-            if (!json.sp || !Array.isArray(json.sp) || !json.lines || !Array.isArray(json.lines)) {
-                document.getElementById('out').innerHTML = `
-                    <div style="padding:20px;color:var(--text);">
-                        <p>⚠️ Ungültiges Szenenformat.</p>
-                        <pre style="margin-top:10px;background:#f8f8f8;padding:10px;border-radius:8px;white-space:pre-wrap;">${JSON.stringify(json, null, 2)}</pre>
-                    </div>`;
-                return;
-            }
-
-            currentScene = json;
-            render();
-            document.getElementById('customPrompt').value = '';
-
-            if (json.vocab && Array.isArray(json.vocab)) {
-                for (const v of json.vocab) {
-                    await saveVocab(v.word, v.translation, v.context, v.difficulty);
-                }
-            }
-        } catch (e) {
-            document.getElementById('out').innerHTML = `<div style="text-align:center;padding:40px;color:red;">Fehler: ${e.message}</div>`;
-        } finally {
-            btn.disabled = false;
-            btn.textContent = '✨ Erstellen';
-        }
+        const v = quizVocabs[quizIndex];
+        const opts = getRandOptions(v);
+        document.getElementById('quizContainer').innerHTML = `
+            <div class="quiz-card">
+                <div class="quiz-progress">Frage ${quizIndex+1} / ${quizVocabs.length}</div>
+                <div class="quiz-question">Was bedeutet <em>"${v.word}"</em>?</div>
+                <div class="quiz-options">
+                    ${opts.map(o => `<div class="quiz-option" data-correct="${o===v.translation}" onclick="answerQuiz(this,'${v.word}')">${o}</div>`).join('')}
+                </div>
+            </div>`;
     }
+
+    async function answerQuiz(el, word) {
+        const correct = el.getAttribute('data-correct') === 'true';
+        document.querySelectorAll('.quiz-option').forEach(o => {
+            o.style.pointerEvents = 'none';
+            if (o.getAttribute('data-correct') === 'true') o.classList.add('correct');
+        });
+        if (!correct) el.classList.add('wrong');
+        const v = vocabs.find(x => x.word === word);
+        if (v) {
+            try {
+                await fetch(API_SRS_URL, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, vocabId: v.vocabId || v.word, success: correct })
+                });
+            } catch(e) {}
+        }
+        setTimeout(() => { quizIndex++; showQuizQ(); }, 1400);
+    }
+
+    /* ── Init ── */
+    document.getElementById('genBtn').onclick = loadScene;
+    document.getElementById('customBtn').onclick = loadCustomScene;
+    document.getElementById('customPrompt').onkeydown = e => { if (e.key === 'Enter') loadCustomScene(); };
+    loadStats();
 </script>
 </body>
 </html>
